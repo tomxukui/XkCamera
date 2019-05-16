@@ -19,7 +19,7 @@
         android:background="#000000"
         android:visibility="invisible" />
 
-    <!--右上角菜单功能-->
+    <!--属性功能-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,12 +45,14 @@
 
     </LinearLayout>
 
+    <!--捕捉功能-->
     <com.xukui.library.xkcamera.CaptureLayout
         android:id="@+id/layout_capture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
 
+    <!--聚焦-->
     <com.xukui.library.xkcamera.FoucsView
         android:id="@+id/view_foucs"
         android:layout_width="wrap_content"
