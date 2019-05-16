@@ -19,31 +19,23 @@
         android:background="#000000"
         android:visibility="invisible" />
 
-    <!--属性功能-->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:gravity="center"
-        android:orientation="horizontal">
+    <!--闪光灯-->
+    <ImageView
+        android:id="@+id/iv_flash"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="left|top"
+        android:padding="18dp"
+        android:src="@drawable/ic_flash_on" />
 
-        <!--闪光灯-->
-        <ImageView
-            android:id="@+id/iv_flash"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="18dp"
-            android:src="@drawable/ic_flash_on" />
-
-        <!--镜头切换-->
-        <ImageView
-            android:id="@+id/iv_switch"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="18dp"
-            android:src="@drawable/ic_camera" />
-
-    </LinearLayout>
+    <!--镜头切换-->
+    <ImageView
+        android:id="@+id/iv_switch"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="top|right"
+        android:padding="18dp"
+        android:src="@drawable/ic_camera" />
 
     <!--捕捉功能-->
     <com.xukui.library.xkcamera.CaptureLayout

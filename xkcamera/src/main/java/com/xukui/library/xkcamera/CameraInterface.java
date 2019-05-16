@@ -39,7 +39,6 @@ import java.util.List;
 
 import static android.graphics.Bitmap.createBitmap;
 
-@SuppressWarnings("deprecation")
 public class CameraInterface implements Camera.PreviewCallback {
 
     private static final String TAG = "CJT";
@@ -60,7 +59,6 @@ public class CameraInterface implements Camera.PreviewCallback {
     private int CAMERA_POST_POSITION = -1;
     private int CAMERA_FRONT_POSITION = -1;
 
-    private SurfaceHolder mHolder = null;
     private float screenProp = -1.0f;
 
     private boolean isRecorder = false;
@@ -68,7 +66,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     private String videoFileName;
     private String saveVideoPath;
     private String videoFileAbsPath;
-    private Bitmap videoFirstFrame = null;
+    private Bitmap videoFirstFrame;
 
     private ErrorListener errorLisenter;
 
@@ -106,16 +104,17 @@ public class CameraInterface implements Camera.PreviewCallback {
         this.mSwitchView = mSwitchView;
         this.mFlashLamp = mFlashLamp;
         if (mSwitchView != null) {
-            cameraAngle = CameraParamUtil.getInstance().getCameraDisplayOrientation(mSwitchView.getContext(),
-                    SELECTED_CAMERA);
+            cameraAngle = CameraParamUtil.getInstance().getCameraDisplayOrientation(mSwitchView.getContext(), SELECTED_CAMERA);
         }
     }
 
     private SensorEventListener sensorEventListener = new SensorEventListener() {
+
         public void onSensorChanged(SensorEvent event) {
             if (Sensor.TYPE_ACCELEROMETER != event.sensor.getType()) {
                 return;
             }
+
             float[] values = event.values;
             angle = AngleUtil.getSensorAngle(values[0], values[1]);
             rotationAnimation();
@@ -123,68 +122,83 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
+
     };
 
-    //切换摄像头icon跟随手机角度进行旋转
+    /**
+     * 切换摄像头icon跟随手机角度进行旋转
+     */
     private void rotationAnimation() {
-        if (mSwitchView == null) {
+        if (mSwitchView == null || mFlashLamp == null) {
             return;
         }
+
         if (rotation != angle) {
             int start_rotaion = 0;
             int end_rotation = 0;
+
             switch (rotation) {
-                case 0:
+
+                case 0: {
                     start_rotaion = 0;
-                    switch (angle) {
-                        case 90:
-                            end_rotation = -90;
-                            break;
-                        case 270:
-                            end_rotation = 90;
-                            break;
+
+                    if (angle == 90) {
+                        end_rotation = -90;
+
+                    } else if (angle == 270) {
+                        end_rotation = 90;
                     }
-                    break;
-                case 90:
+                }
+                break;
+
+                case 90: {
                     start_rotaion = -90;
-                    switch (angle) {
-                        case 0:
-                            end_rotation = 0;
-                            break;
-                        case 180:
-                            end_rotation = -180;
-                            break;
+
+                    if (angle == 0) {
+                        end_rotation = 0;
+
+                    } else if (angle == 180) {
+                        end_rotation = -180;
                     }
-                    break;
-                case 180:
+                }
+                break;
+
+                case 180: {
                     start_rotaion = 180;
-                    switch (angle) {
-                        case 90:
-                            end_rotation = 270;
-                            break;
-                        case 270:
-                            end_rotation = 90;
-                            break;
+
+                    if (angle == 90) {
+                        end_rotation = 270;
+
+                    } else if (angle == 270) {
+                        end_rotation = 90;
                     }
-                    break;
-                case 270:
+                }
+                break;
+
+                case 270: {
                     start_rotaion = 90;
-                    switch (angle) {
-                        case 0:
-                            end_rotation = 0;
-                            break;
-                        case 180:
-                            end_rotation = 180;
-                            break;
+
+                    if (angle == 0) {
+                        end_rotation = 0;
+
+                    } else if (angle == 180) {
+                        end_rotation = 180;
                     }
+                }
+                break;
+
+                default:
                     break;
+
             }
-            ObjectAnimator animC = ObjectAnimator.ofFloat(mSwitchView, "rotation", start_rotaion, end_rotation);
-            ObjectAnimator animF = ObjectAnimator.ofFloat(mFlashLamp, "rotation", start_rotaion, end_rotation);
+
+            ObjectAnimator anim1 = ObjectAnimator.ofFloat(mSwitchView, "rotation", start_rotaion, end_rotation);
+            ObjectAnimator anim2 = ObjectAnimator.ofFloat(mFlashLamp, "rotation", start_rotaion, end_rotation);
             AnimatorSet set = new AnimatorSet();
-            set.playTogether(animC, animF);
+            set.playTogether(anim1, anim2);
             set.setDuration(500);
             set.start();
+
             rotation = angle;
         }
     }
@@ -349,7 +363,6 @@ public class CameraInterface implements Camera.PreviewCallback {
         if (holder == null) {
             return;
         }
-        this.mHolder = holder;
         if (mCamera != null) {
             try {
                 mParams = mCamera.getParameters();
@@ -420,11 +433,9 @@ public class CameraInterface implements Camera.PreviewCallback {
                 mCamera.stopPreview();
                 //这句要在stopPreview后执行，不然会卡顿或者花屏
                 mCamera.setPreviewDisplay(null);
-                mHolder = null;
                 isPreviewing = false;
                 mCamera.release();
                 mCamera = null;
-//                destroyCameraInterface();
                 Log.i(TAG, "=== Destroy Camera ===");
             } catch (IOException e) {
                 e.printStackTrace();
