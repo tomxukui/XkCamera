@@ -5,54 +5,54 @@
     android:background="#000000"
     android:orientation="vertical">
 
-    <FrameLayout
+    <!--视频预览-->
+    <VideoView
+        android:id="@+id/vv_video"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" />
 
-        <VideoView
-            android:id="@+id/video_preview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <!--照片预览-->
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="invisible" />
 
-        <ImageView
-            android:id="@+id/image_photo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#000"
-            android:visibility="invisible" />
-    </FrameLayout>
-
-
+    <!--右上角菜单功能-->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
+        android:gravity="center"
         android:orientation="horizontal">
 
+        <!--闪光灯-->
         <ImageView
-            android:id="@+id/image_flash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:id="@+id/iv_flash"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="18dp"
             android:src="@drawable/ic_flash_on" />
 
+        <!--镜头切换-->
         <ImageView
-            android:id="@+id/image_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:id="@+id/iv_switch"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="18dp"
             android:src="@drawable/ic_camera" />
 
     </LinearLayout>
 
     <com.xukui.library.xkcamera.CaptureLayout
-        android:id="@+id/capture_layout"
+        android:id="@+id/layout_capture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
 
     <com.xukui.library.xkcamera.FoucsView
-        android:id="@+id/fouce_view"
+        android:id="@+id/view_foucs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -70,12 +70,14 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private ClickListener rightClickListener;
 
     private Context mContext;
-    private VideoView mVideoView;
-    private ImageView mPhoto;
-    private ImageView mSwitchCamera;
-    private ImageView mFlashLamp;
-    private CaptureLayout mCaptureLayout;
-    private FoucsView mFoucsView;
+
+    private VideoView vv_video;
+    private ImageView iv_photo;
+    private ImageView iv_flash;
+    private ImageView iv_switch;
+    private CaptureLayout layout_capture;
+    private FoucsView view_foucs;
+
     private MediaPlayer mMediaPlayer;
 
     private int layout_width;
@@ -121,6 +123,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         iconRight = a.getResourceId(R.styleable.JCameraView_iconRight, 0);
         duration = a.getInteger(R.styleable.JCameraView_duration_max, 10 * 1000);       //没设置默认为10s
         a.recycle();
+
         initData();
         initView();
     }
@@ -134,14 +137,19 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private void initView() {
         setWillNotDraw(false);
+
         View view = LayoutInflater.from(mContext).inflate(R.layout.camera_view, this);
-        mVideoView = (VideoView) view.findViewById(R.id.video_preview);
-        mPhoto = (ImageView) view.findViewById(R.id.image_photo);
-        mSwitchCamera = (ImageView) view.findViewById(R.id.image_switch);
-        mSwitchCamera.setImageResource(iconSrc);
-        mFlashLamp = (ImageView) view.findViewById(R.id.image_flash);
+        vv_video = view.findViewById(R.id.vv_video);
+        iv_photo = view.findViewById(R.id.iv_photo);
+        iv_flash = view.findViewById(R.id.iv_flash);
+        iv_switch = view.findViewById(R.id.iv_switch);
+        layout_capture = view.findViewById(R.id.layout_capture);
+        view_foucs = view.findViewById(R.id.view_foucs);
+
+        iv_switch.setImageResource(iconSrc);
+
         setFlashRes();
-        mFlashLamp.setOnClickListener(new OnClickListener() {
+        iv_flash.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 type_flash++;
@@ -150,39 +158,39 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 setFlashRes();
             }
         });
-        mCaptureLayout = (CaptureLayout) view.findViewById(R.id.capture_layout);
-        mCaptureLayout.setDuration(duration);
-        mCaptureLayout.setIconSrc(iconLeft, iconRight);
-        mFoucsView = (FoucsView) view.findViewById(R.id.fouce_view);
-        mVideoView.getHolder().addCallback(this);
+
+        layout_capture.setDuration(duration);
+        layout_capture.setIconSrc(iconLeft, iconRight);
+
+        vv_video.getHolder().addCallback(this);
         //切换摄像头
-        mSwitchCamera.setOnClickListener(new OnClickListener() {
+        iv_switch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                machine.swtich(mVideoView.getHolder(), screenProp);
+                machine.swtich(vv_video.getHolder(), screenProp);
             }
         });
         //拍照 录像
-        mCaptureLayout.setCaptureLisenter(new CaptureListener() {
+        layout_capture.setCaptureLisenter(new CaptureListener() {
             @Override
             public void takePictures() {
-                mSwitchCamera.setVisibility(INVISIBLE);
-                mFlashLamp.setVisibility(INVISIBLE);
+                iv_switch.setVisibility(INVISIBLE);
+                iv_flash.setVisibility(INVISIBLE);
                 machine.capture();
             }
 
             @Override
             public void recordStart() {
-                mSwitchCamera.setVisibility(INVISIBLE);
-                mFlashLamp.setVisibility(INVISIBLE);
-                machine.record(mVideoView.getHolder().getSurface(), screenProp);
+                iv_switch.setVisibility(INVISIBLE);
+                iv_flash.setVisibility(INVISIBLE);
+                machine.record(vv_video.getHolder().getSurface(), screenProp);
             }
 
             @Override
             public void recordShort(final long time) {
-                mCaptureLayout.setTextWithAnimation("录制时间过短");
-                mSwitchCamera.setVisibility(VISIBLE);
-                mFlashLamp.setVisibility(VISIBLE);
+                layout_capture.setTextWithAnimation("录制时间过短");
+                iv_switch.setVisibility(VISIBLE);
+                iv_flash.setVisibility(VISIBLE);
                 postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -209,10 +217,10 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
         });
         //确认 取消
-        mCaptureLayout.setTypeLisenter(new TypeListener() {
+        layout_capture.setTypeLisenter(new TypeListener() {
             @Override
             public void cancel() {
-                machine.cancle(mVideoView.getHolder(), screenProp);
+                machine.cancle(vv_video.getHolder(), screenProp);
             }
 
             @Override
@@ -221,7 +229,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
         });
         //退出
-//        mCaptureLayout.setReturnLisenter(new ReturnListener() {
+//        layout_capture.setReturnLisenter(new ReturnListener() {
 //            @Override
 //            public void onReturn() {
 //                if (jCameraLisenter != null) {
@@ -229,7 +237,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 //                }
 //            }
 //        });
-        mCaptureLayout.setLeftClickListener(new ClickListener() {
+        layout_capture.setLeftClickListener(new ClickListener() {
             @Override
             public void onClick() {
                 if (leftClickListener != null) {
@@ -237,7 +245,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 }
             }
         });
-        mCaptureLayout.setRightClickListener(new ClickListener() {
+        layout_capture.setRightClickListener(new ClickListener() {
             @Override
             public void onClick() {
                 if (rightClickListener != null) {
@@ -250,8 +258,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        float widthSize = mVideoView.getMeasuredWidth();
-        float heightSize = mVideoView.getMeasuredHeight();
+        float widthSize = vv_video.getMeasuredWidth();
+        float heightSize = vv_video.getMeasuredHeight();
         if (screenProp == 0) {
             screenProp = heightSize / widthSize;
         }
@@ -259,15 +267,15 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     @Override
     public void cameraHasOpened() {
-        CameraInterface.getInstance().doStartPreview(mVideoView.getHolder(), screenProp);
+        CameraInterface.getInstance().doStartPreview(vv_video.getHolder(), screenProp);
     }
 
     //生命周期onResume
     public void onResume() {
         resetState(TYPE_DEFAULT); //重置状态
         CameraInterface.getInstance().registerSensorManager(mContext);
-        CameraInterface.getInstance().setSwitchView(mSwitchCamera, mFlashLamp);
-        machine.start(mVideoView.getHolder(), screenProp);
+        CameraInterface.getInstance().setSwitchView(iv_switch, iv_flash);
+        machine.start(vv_video.getHolder(), screenProp);
     }
 
     //生命周期onPause
@@ -349,7 +357,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         machine.foucs(x, y, new CameraInterface.FocusCallback() {
             @Override
             public void focusSuccess() {
-                mFoucsView.setVisibility(INVISIBLE);
+                view_foucs.setVisibility(INVISIBLE);
             }
         });
     }
@@ -360,7 +368,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             int height = (int) ((videoHeight / videoWidth) * getWidth());
             videoViewParam = new LayoutParams(LayoutParams.MATCH_PARENT, height);
             videoViewParam.gravity = Gravity.CENTER;
-            mVideoView.setLayoutParams(videoViewParam);
+            vv_video.setLayoutParams(videoViewParam);
         }
     }
 
@@ -388,7 +396,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     //设置CaptureButton功能（拍照和录像）
     public void setFeatures(int state) {
-        this.mCaptureLayout.setButtonFeatures(state);
+        this.layout_capture.setButtonFeatures(state);
     }
 
     //设置录制质量
@@ -403,21 +411,21 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 stopVideo();    //停止播放
                 //初始化VideoView
                 FileUtil.deleteFile(videoUrl);
-                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                machine.start(mVideoView.getHolder(), screenProp);
+                vv_video.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                machine.start(vv_video.getHolder(), screenProp);
                 break;
             case TYPE_PICTURE:
-                mPhoto.setVisibility(INVISIBLE);
+                iv_photo.setVisibility(INVISIBLE);
                 break;
             case TYPE_SHORT:
                 break;
             case TYPE_DEFAULT:
-                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                vv_video.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 break;
         }
-        mSwitchCamera.setVisibility(VISIBLE);
-        mFlashLamp.setVisibility(VISIBLE);
-        mCaptureLayout.resetCaptureLayout();
+        iv_switch.setVisibility(VISIBLE);
+        iv_flash.setVisibility(VISIBLE);
+        layout_capture.resetCaptureLayout();
     }
 
     @Override
@@ -425,14 +433,14 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         switch (type) {
             case TYPE_VIDEO:
                 stopVideo();    //停止播放
-                mVideoView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                machine.start(mVideoView.getHolder(), screenProp);
+                vv_video.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                machine.start(vv_video.getHolder(), screenProp);
                 if (jCameraLisenter != null) {
                     jCameraLisenter.recordSuccess(videoUrl, firstFrame);
                 }
                 break;
             case TYPE_PICTURE:
-                mPhoto.setVisibility(INVISIBLE);
+                iv_photo.setVisibility(INVISIBLE);
                 if (jCameraLisenter != null) {
                     jCameraLisenter.captureSuccess(captureBitmap);
                 }
@@ -442,21 +450,21 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             case TYPE_DEFAULT:
                 break;
         }
-        mCaptureLayout.resetCaptureLayout();
+        layout_capture.resetCaptureLayout();
     }
 
     @Override
     public void showPicture(Bitmap bitmap, boolean isVertical) {
         if (isVertical) {
-            mPhoto.setScaleType(ImageView.ScaleType.FIT_XY);
+            iv_photo.setScaleType(ImageView.ScaleType.FIT_XY);
         } else {
-            mPhoto.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iv_photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
         captureBitmap = bitmap;
-        mPhoto.setImageBitmap(bitmap);
-        mPhoto.setVisibility(VISIBLE);
-        mCaptureLayout.startAlphaAnimation();
-        mCaptureLayout.startTypeBtnAnimator();
+        iv_photo.setImageBitmap(bitmap);
+        iv_photo.setVisibility(VISIBLE);
+        layout_capture.startAlphaAnimation();
+        layout_capture.startTypeBtnAnimator();
     }
 
     @Override
@@ -474,7 +482,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                         mMediaPlayer.reset();
                     }
                     mMediaPlayer.setDataSource(url);
-                    mMediaPlayer.setSurface(mVideoView.getHolder().getSurface());
+                    mMediaPlayer.setSurface(vv_video.getHolder().getSurface());
                     mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer
@@ -512,37 +520,37 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     @Override
     public void setTip(String tip) {
-        mCaptureLayout.setTip(tip);
+        layout_capture.setTip(tip);
     }
 
     @Override
     public void startPreviewCallback() {
-        handlerFoucs(mFoucsView.getWidth() / 2, mFoucsView.getHeight() / 2);
+        handlerFoucs(view_foucs.getWidth() / 2, view_foucs.getHeight() / 2);
     }
 
     @Override
     public boolean handlerFoucs(float x, float y) {
-        if (y > mCaptureLayout.getTop()) {
+        if (y > layout_capture.getTop()) {
             return false;
         }
-        mFoucsView.setVisibility(VISIBLE);
-        if (x < mFoucsView.getWidth() / 2) {
-            x = mFoucsView.getWidth() / 2;
+        view_foucs.setVisibility(VISIBLE);
+        if (x < view_foucs.getWidth() / 2) {
+            x = view_foucs.getWidth() / 2;
         }
-        if (x > layout_width - mFoucsView.getWidth() / 2) {
-            x = layout_width - mFoucsView.getWidth() / 2;
+        if (x > layout_width - view_foucs.getWidth() / 2) {
+            x = layout_width - view_foucs.getWidth() / 2;
         }
-        if (y < mFoucsView.getWidth() / 2) {
-            y = mFoucsView.getWidth() / 2;
+        if (y < view_foucs.getWidth() / 2) {
+            y = view_foucs.getWidth() / 2;
         }
-        if (y > mCaptureLayout.getTop() - mFoucsView.getWidth() / 2) {
-            y = mCaptureLayout.getTop() - mFoucsView.getWidth() / 2;
+        if (y > layout_capture.getTop() - view_foucs.getWidth() / 2) {
+            y = layout_capture.getTop() - view_foucs.getWidth() / 2;
         }
-        mFoucsView.setX(x - mFoucsView.getWidth() / 2);
-        mFoucsView.setY(y - mFoucsView.getHeight() / 2);
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(mFoucsView, "scaleX", 1, 0.6f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(mFoucsView, "scaleY", 1, 0.6f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(mFoucsView, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
+        view_foucs.setX(x - view_foucs.getWidth() / 2);
+        view_foucs.setY(y - view_foucs.getHeight() / 2);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(view_foucs, "scaleX", 1, 0.6f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(view_foucs, "scaleY", 1, 0.6f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(view_foucs, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
         AnimatorSet animSet = new AnimatorSet();
         animSet.play(scaleX).with(scaleY).before(alpha);
         animSet.setDuration(400);
@@ -561,17 +569,18 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private void setFlashRes() {
         switch (type_flash) {
             case TYPE_FLASH_AUTO:
-                mFlashLamp.setImageResource(R.drawable.ic_flash_auto);
+                iv_flash.setImageResource(R.drawable.ic_flash_auto);
                 machine.flash(Camera.Parameters.FLASH_MODE_AUTO);
                 break;
             case TYPE_FLASH_ON:
-                mFlashLamp.setImageResource(R.drawable.ic_flash_on);
+                iv_flash.setImageResource(R.drawable.ic_flash_on);
                 machine.flash(Camera.Parameters.FLASH_MODE_ON);
                 break;
             case TYPE_FLASH_OFF:
-                mFlashLamp.setImageResource(R.drawable.ic_flash_off);
+                iv_flash.setImageResource(R.drawable.ic_flash_off);
                 machine.flash(Camera.Parameters.FLASH_MODE_OFF);
                 break;
         }
     }
+
 }
