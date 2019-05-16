@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -165,10 +166,17 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         vv_video.getHolder().addCallback(this);
         //切换摄像头
         iv_switch.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 machine.swtich(vv_video.getHolder(), screenProp);
+
+                ViewCompat.animate(v)
+                        .rotationYBy(180)
+                        .setDuration(200)
+                        .start();
             }
+
         });
         //拍照 录像
         layout_capture.setCaptureLisenter(new CaptureListener() {
