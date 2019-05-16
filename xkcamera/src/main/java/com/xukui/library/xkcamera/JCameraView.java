@@ -174,6 +174,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 ViewCompat.animate(v)
                         .rotationYBy(180)
                         .setDuration(200)
+                        .withLayer()
                         .start();
             }
 

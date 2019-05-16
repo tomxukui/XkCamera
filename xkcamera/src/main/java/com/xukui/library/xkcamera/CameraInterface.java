@@ -340,7 +340,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
         doDestroyCamera();
         openCamera(SELECTED_CAMERA);
-//        mCamera = Camera.open();
+
         if (Build.VERSION.SDK_INT > 17 && this.mCamera != null) {
             try {
                 this.mCamera.enableShutterSound(false);
@@ -425,23 +425,20 @@ public class CameraInterface implements Camera.PreviewCallback {
      */
     void doDestroyCamera() {
         errorLisenter = null;
+
         if (null != mCamera) {
             try {
                 mCamera.setPreviewCallback(null);
-                mSwitchView = null;
-                mFlashLamp = null;
                 mCamera.stopPreview();
                 //这句要在stopPreview后执行，不然会卡顿或者花屏
                 mCamera.setPreviewDisplay(null);
                 isPreviewing = false;
                 mCamera.release();
                 mCamera = null;
-                Log.i(TAG, "=== Destroy Camera ===");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            Log.i(TAG, "=== Camera  Null===");
         }
     }
 
