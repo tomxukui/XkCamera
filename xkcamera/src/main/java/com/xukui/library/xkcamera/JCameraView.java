@@ -34,8 +34,7 @@ import com.xukui.library.xkcamera.view.CameraView;
 
 import java.io.IOException;
 
-public class JCameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder
-        .Callback, CameraView {
+public class JCameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder.Callback, CameraView {
 
     //Camera状态机
     private CameraMachine machine;
@@ -61,11 +60,9 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
     public static final int MEDIA_QUALITY_SORRY = 1 * 80000;
 
-
     public static final int BUTTON_STATE_ONLY_CAPTURE = 0x101;      //只能拍照
     public static final int BUTTON_STATE_ONLY_RECORDER = 0x102;     //只能录像
     public static final int BUTTON_STATE_BOTH = 0x103;              //两者都可以
-
 
     //回调监听
     private JCameraListener jCameraLisenter;
@@ -87,7 +84,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private Bitmap captureBitmap;   //捕获的图片
     private Bitmap firstFrame;      //第一帧图片
     private String videoUrl;        //视频URL
-
 
     //切换摄像头按钮的参数
     private int iconSize = 0;       //图标大小
