@@ -102,7 +102,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         this.mFlashLamp = flashLamp;
 
         if (mSwitchView != null) {
-            cameraAngle = CameraParamUtil.getInstance().getCameraDisplayOrientation(mSwitchView.getContext(), SELECTED_CAMERA);
+            cameraAngle = CameraParamUtil.getCameraDisplayOrientation(mSwitchView.getContext(), SELECTED_CAMERA);
         }
     }
 
@@ -285,10 +285,8 @@ public class CameraInterface implements Camera.PreviewCallback {
         if (mCamera != null) {
             try {
                 mParams = mCamera.getParameters();
-                Camera.Size previewSize = CameraParamUtil.getInstance().getPreviewSize(mParams
-                        .getSupportedPreviewSizes(), 1000, screenProp);
-                Camera.Size pictureSize = CameraParamUtil.getInstance().getPictureSize(mParams
-                        .getSupportedPictureSizes(), 1200, screenProp);
+                Camera.Size previewSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 1000, screenProp);
+                Camera.Size pictureSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPictureSizes(), 1000, screenProp);
 
                 mParams.setPreviewSize(previewSize.width, previewSize.height);
 
@@ -297,12 +295,12 @@ public class CameraInterface implements Camera.PreviewCallback {
 
                 mParams.setPictureSize(pictureSize.width, pictureSize.height);
 
-                if (CameraParamUtil.getInstance().isSupportedFocusMode(
+                if (CameraParamUtil.isSupportedFocusMode(
                         mParams.getSupportedFocusModes(),
                         Camera.Parameters.FOCUS_MODE_AUTO)) {
                     mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 }
-                if (CameraParamUtil.getInstance().isSupportedPictureFormats(mParams.getSupportedPictureFormats(),
+                if (CameraParamUtil.isSupportedPictureFormats(mParams.getSupportedPictureFormats(),
                         ImageFormat.JPEG)) {
                     mParams.setPictureFormat(ImageFormat.JPEG);
                     mParams.setJpegQuality(100);
@@ -379,7 +377,6 @@ public class CameraInterface implements Camera.PreviewCallback {
                 break;
         }
 //
-        Log.i("CJT", angle + " = " + cameraAngle + " = " + nowAngle);
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -454,27 +451,20 @@ public class CameraInterface implements Camera.PreviewCallback {
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-
         Camera.Size videoSize;
         if (mParams.getSupportedVideoSizes() == null) {
-            videoSize = CameraParamUtil.getInstance().getPreviewSize(mParams.getSupportedPreviewSizes(), 600,
-                    screenProp);
+            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 600, screenProp);
+
         } else {
-            videoSize = CameraParamUtil.getInstance().getPreviewSize(mParams.getSupportedVideoSizes(), 600,
-                    screenProp);
+            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedVideoSizes(), 600, screenProp);
         }
-        Log.i(TAG, "setVideoSize    width = " + videoSize.width + "height = " + videoSize.height);
+
         if (videoSize.width == videoSize.height) {
             mediaRecorder.setVideoSize(preview_width, preview_height);
+
         } else {
             mediaRecorder.setVideoSize(videoSize.width, videoSize.height);
         }
-//        if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
-//            mediaRecorder.setOrientationHint(270);
-//        } else {
-//            mediaRecorder.setOrientationHint(nowAngle);
-////            mediaRecorder.setOrientationHint(90);
-//        }
 
         if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
             //手机预览倒立的处理

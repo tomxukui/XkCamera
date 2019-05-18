@@ -2,7 +2,6 @@ package com.xukui.library.xkcamera.util;
 
 import android.content.Context;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -12,106 +11,81 @@ import java.util.List;
 
 public class CameraParamUtil {
 
-    private static final String TAG = "JCameraView";
+    private final static CameraSizeComparator mSizeComparator = new CameraSizeComparator();
 
-    private CameraSizeComparator sizeComparator = new CameraSizeComparator();
-    private static CameraParamUtil cameraParamUtil = null;
+    /**
+     * 获取预览的尺寸
+     */
+    public static Camera.Size getPreviewSize(List<Camera.Size> list, int th, float rate) {
+        Collections.sort(list, mSizeComparator);
 
-    private CameraParamUtil() {
+        for (int i = 0; i < list.size(); i++) {
+            Camera.Size size = list.get(i);
 
-    }
-
-    public static CameraParamUtil getInstance() {
-        if (cameraParamUtil == null) {
-            cameraParamUtil = new CameraParamUtil();
-            return cameraParamUtil;
-        } else {
-            return cameraParamUtil;
-        }
-    }
-
-    public Camera.Size getPreviewSize(List<Camera.Size> list, int th, float rate) {
-        Collections.sort(list, sizeComparator);
-        int i = 0;
-        for (Camera.Size s : list) {
-            if ((s.width > th) && equalRate(s, rate)) {
-                Log.i(TAG, "MakeSure Preview :w = " + s.width + " h = " + s.height);
-                break;
+            if ((size.width > th) && equalRate(size, rate)) {
+                return list.get(i);
             }
-            i++;
         }
-        if (i == list.size()) {
-            return getBestSize(list, rate);
-        } else {
-            return list.get(i);
-        }
+
+        return getBestSize(list, rate);
     }
 
-    public Camera.Size getPictureSize(List<Camera.Size> list, int th, float rate) {
-        Collections.sort(list, sizeComparator);
-        int i = 0;
-        for (Camera.Size s : list) {
-            if ((s.width > th) && equalRate(s, rate)) {
-                Log.i(TAG, "MakeSure Picture :w = " + s.width + " h = " + s.height);
-                break;
-            }
-            i++;
-        }
-        if (i == list.size()) {
-            return getBestSize(list, rate);
-        } else {
-            return list.get(i);
-        }
-    }
-
-    private Camera.Size getBestSize(List<Camera.Size> list, float rate) {
+    /**
+     * 如果没有合适的尺寸，获取最佳尺寸
+     */
+    private static Camera.Size getBestSize(List<Camera.Size> list, float rate) {
         float previewDisparity = 100;
         int index = 0;
+
         for (int i = 0; i < list.size(); i++) {
             Camera.Size cur = list.get(i);
+
             float prop = (float) cur.width / (float) cur.height;
+
             if (Math.abs(rate - prop) < previewDisparity) {
                 previewDisparity = Math.abs(rate - prop);
                 index = i;
             }
         }
+
         return list.get(index);
     }
 
-
-    private boolean equalRate(Camera.Size s, float rate) {
+    private static boolean equalRate(Camera.Size s, float rate) {
         float r = (float) (s.width) / (float) (s.height);
         return Math.abs(r - rate) <= 0.2;
     }
 
-    public boolean isSupportedFocusMode(List<String> focusList, String focusMode) {
+    public static boolean isSupportedFocusMode(List<String> focusList, String focusMode) {
         for (int i = 0; i < focusList.size(); i++) {
             if (focusMode.equals(focusList.get(i))) {
-                Log.i(TAG, "FocusMode supported " + focusMode);
                 return true;
             }
         }
-        Log.i(TAG, "FocusMode not supported " + focusMode);
+
         return false;
     }
 
-    public boolean isSupportedPictureFormats(List<Integer> supportedPictureFormats, int jpeg) {
+    public static boolean isSupportedPictureFormats(List<Integer> supportedPictureFormats, int jpeg) {
         for (int i = 0; i < supportedPictureFormats.size(); i++) {
             if (jpeg == supportedPictureFormats.get(i)) {
-                Log.i(TAG, "Formats supported " + jpeg);
                 return true;
             }
         }
-        Log.i(TAG, "Formats not supported " + jpeg);
+
         return false;
     }
 
-    private class CameraSizeComparator implements Comparator<Camera.Size> {
+    private static class CameraSizeComparator implements Comparator<Camera.Size> {
+
+        @Override
         public int compare(Camera.Size lhs, Camera.Size rhs) {
             if (lhs.width == rhs.width) {
                 return 0;
+
             } else if (lhs.width > rhs.width) {
                 return 1;
+
             } else {
                 return -1;
             }
@@ -119,34 +93,49 @@ public class CameraParamUtil {
 
     }
 
-    public int getCameraDisplayOrientation(Context context, int cameraId) {
+    public static int getCameraDisplayOrientation(Context context, int cameraId) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
+
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         int rotation = wm.getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0:
+
+            case Surface.ROTATION_0: {
                 degrees = 0;
-                break;
-            case Surface.ROTATION_90:
+            }
+            break;
+
+            case Surface.ROTATION_90: {
                 degrees = 90;
-                break;
-            case Surface.ROTATION_180:
+            }
+            break;
+
+            case Surface.ROTATION_180: {
                 degrees = 180;
-                break;
-            case Surface.ROTATION_270:
+            }
+            break;
+
+            case Surface.ROTATION_270: {
                 degrees = 270;
+            }
+            break;
+
+            default:
                 break;
+
         }
+
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;   // compensate the mirror
+            result = (360 - result) % 360;
+
         } else {
-            // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
+
         return result;
     }
 
