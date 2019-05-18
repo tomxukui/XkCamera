@@ -19,7 +19,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.widget.ImageView;
 
 import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.util.AngleUtil;
@@ -278,8 +277,9 @@ public class CameraInterface implements Camera.PreviewCallback {
         if (mCamera != null) {
             try {
                 mParams = mCamera.getParameters();
-                Camera.Size previewSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 1000, screenProp);
-                Camera.Size pictureSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPictureSizes(), 1000, screenProp);
+
+                Camera.Size previewSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 1080, screenProp);
+                Camera.Size pictureSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPictureSizes(), 1080, screenProp);
 
                 mParams.setPreviewSize(previewSize.width, previewSize.height);
 
@@ -288,16 +288,15 @@ public class CameraInterface implements Camera.PreviewCallback {
 
                 mParams.setPictureSize(pictureSize.width, pictureSize.height);
 
-                if (CameraParamUtil.isSupportedFocusMode(
-                        mParams.getSupportedFocusModes(),
-                        Camera.Parameters.FOCUS_MODE_AUTO)) {
+                if (CameraParamUtil.isSupportedFocusMode(mParams.getSupportedFocusModes(), Camera.Parameters.FOCUS_MODE_AUTO)) {
                     mParams.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 }
-                if (CameraParamUtil.isSupportedPictureFormats(mParams.getSupportedPictureFormats(),
-                        ImageFormat.JPEG)) {
+
+                if (CameraParamUtil.isSupportedPictureFormats(mParams.getSupportedPictureFormats(), ImageFormat.JPEG)) {
                     mParams.setPictureFormat(ImageFormat.JPEG);
                     mParams.setJpegQuality(100);
                 }
+
                 mCamera.setParameters(mParams);
                 mParams = mCamera.getParameters();
                 mCamera.setPreviewDisplay(holder);  //SurfaceView
@@ -305,7 +304,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                 mCamera.setPreviewCallback(this); //每一帧回调
                 mCamera.startPreview();//启动浏览
                 isPreviewing = true;
-                Log.i(TAG, "=== Start Preview ===");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -369,7 +368,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                 nowAngle = Math.abs(cameraAngle - angle);
                 break;
         }
-//
+
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -446,10 +445,10 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         Camera.Size videoSize;
         if (mParams.getSupportedVideoSizes() == null) {
-            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 600, screenProp);
+            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedPreviewSizes(), 1080, screenProp);
 
         } else {
-            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedVideoSizes(), 600, screenProp);
+            videoSize = CameraParamUtil.getPreviewSize(mParams.getSupportedVideoSizes(), 1080, screenProp);
         }
 
         if (videoSize.width == videoSize.height) {

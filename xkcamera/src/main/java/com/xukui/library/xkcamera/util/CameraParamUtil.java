@@ -15,6 +15,7 @@ public class CameraParamUtil {
      * 获取预览的尺寸
      */
     public static Camera.Size getPreviewSize(List<Camera.Size> list, int th, float rate) {
+        //从小到大, 先判断size.width再判断size.height
         Collections.sort(list, new Comparator<Camera.Size>() {
 
             @Override
@@ -31,15 +32,37 @@ public class CameraParamUtil {
 
         });
 
+        int index = -1;
+        float len = 1f;
+
         for (int i = 0; i < list.size(); i++) {
             Camera.Size size = list.get(i);
 
-            if ((size.width > th) && equalRate(size, rate)) {
-                return list.get(i);
+            if (th <= size.width) {
+                float r = (1.0f * size.width) / size.height;
+                r = Math.abs(r - rate);
+
+                if (r <= 0.1f) {
+                    if (index < 0) {
+                        index = i;
+                        len = r;
+
+                    } else {
+                        if (len > r) {
+                            index = i;
+                            len = r;
+                        }
+                    }
+                }
             }
         }
 
-        return getBestSize(list, rate);
+        if (index < 0) {
+            return getBestSize(list, rate);
+
+        } else {
+            return list.get(index);
+        }
     }
 
     /**
@@ -61,12 +84,6 @@ public class CameraParamUtil {
         }
 
         return list.get(index);
-    }
-
-    private static boolean equalRate(Camera.Size s, float rate) {
-        float r = (float) (s.width) / (float) (s.height);
-
-        return Math.abs(r - rate) <= 0.1;
     }
 
     public static boolean isSupportedFocusMode(List<String> focusList, String focusMode) {
