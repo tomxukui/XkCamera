@@ -68,9 +68,6 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     private OnErrorListener mOnErrorListener;
 
-    private ImageView mSwitchView;
-    private ImageView mFlashLamp;
-
     private int preview_width;
     private int preview_height;
 
@@ -97,13 +94,8 @@ public class CameraInterface implements Camera.PreviewCallback {
         return mCameraInterface;
     }
 
-    public void setSwitchView(ImageView switchView, ImageView flashLamp) {
-        this.mSwitchView = switchView;
-        this.mFlashLamp = flashLamp;
-
-        if (mSwitchView != null) {
-            cameraAngle = CameraParamUtil.getCameraDisplayOrientation(mSwitchView.getContext(), SELECTED_CAMERA);
-        }
+    public void setCameraAngle(Context context) {
+        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, SELECTED_CAMERA);
     }
 
     private SensorEventListener sensorEventListener = new SensorEventListener() {
@@ -275,6 +267,7 @@ public class CameraInterface implements Camera.PreviewCallback {
      */
     public void doStartPreview(SurfaceHolder holder, float screenProp) {
         if (isPreviewing) {
+            return;
         }
         if (this.screenProp < 0) {
             this.screenProp = screenProp;

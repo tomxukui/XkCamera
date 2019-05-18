@@ -104,7 +104,6 @@ public class CameraMachine implements State {
         state.confirm();
     }
 
-
     @Override
     public void zoom(float zoom, int type) {
         state.zoom(zoom, type);

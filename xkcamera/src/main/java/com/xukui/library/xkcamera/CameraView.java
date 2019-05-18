@@ -243,7 +243,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     public void onResume() {
         resetState(TYPE_DEFAULT); //重置状态
         CameraInterface.getInstance().registerSensorManager(mContext);
-        CameraInterface.getInstance().setSwitchView(iv_switch, iv_flash);
+        CameraInterface.getInstance().setCameraAngle(mContext);
         mMachine.start(v_preview.getHolder(), mScreenProp);
     }
 

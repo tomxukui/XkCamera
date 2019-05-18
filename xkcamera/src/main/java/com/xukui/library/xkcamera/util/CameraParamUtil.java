@@ -11,13 +11,25 @@ import java.util.List;
 
 public class CameraParamUtil {
 
-    private final static CameraSizeComparator mSizeComparator = new CameraSizeComparator();
-
     /**
      * 获取预览的尺寸
      */
     public static Camera.Size getPreviewSize(List<Camera.Size> list, int th, float rate) {
-        Collections.sort(list, mSizeComparator);
+        Collections.sort(list, new Comparator<Camera.Size>() {
+
+            @Override
+            public int compare(Camera.Size s1, Camera.Size s2) {
+                int len = s1.width - s2.width;
+
+                if (len == 0) {
+                    return s1.height - s2.height;
+
+                } else {
+                    return len;
+                }
+            }
+
+        });
 
         for (int i = 0; i < list.size(); i++) {
             Camera.Size size = list.get(i);
@@ -53,7 +65,8 @@ public class CameraParamUtil {
 
     private static boolean equalRate(Camera.Size s, float rate) {
         float r = (float) (s.width) / (float) (s.height);
-        return Math.abs(r - rate) <= 0.2;
+
+        return Math.abs(r - rate) <= 0.1;
     }
 
     public static boolean isSupportedFocusMode(List<String> focusList, String focusMode) {
