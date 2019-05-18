@@ -38,7 +38,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private static final int TYPE_FLASH_AUTO = 0x021;
     private static final int TYPE_FLASH_ON = 0x022;
     private static final int TYPE_FLASH_OFF = 0x023;
-    private int mFlashType = TYPE_FLASH_OFF;
 
     //拍照浏览时候的类型
     public static final int TYPE_PICTURE = 0x001;
@@ -71,6 +70,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private Context mContext;
 
+    private int mFlashType = TYPE_FLASH_OFF;
     private int mMaxDuration = 15000;//视频录制最长时间
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
