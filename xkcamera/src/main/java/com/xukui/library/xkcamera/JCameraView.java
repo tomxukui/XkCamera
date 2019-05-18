@@ -30,7 +30,6 @@ import com.xukui.library.xkcamera.listener.JCameraListener;
 import com.xukui.library.xkcamera.listener.TypeListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
-import com.xukui.library.xkcamera.util.ScreenUtils;
 import com.xukui.library.xkcamera.view.CameraView;
 
 import java.io.IOException;
@@ -81,7 +80,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private MediaPlayer mMediaPlayer;
 
-    private int layout_width;
     private float screenProp = 0f;
 
     private Bitmap captureBitmap;   //捕获的图片
@@ -96,9 +94,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private int iconRight = 0;      //右图标
     private int duration = 0;       //录制时间
 
-    //缩放梯度
-    private int zoomGradient = 0;
-
     private boolean firstTouch = true;
     private float firstTouchLength = 0;
 
@@ -112,40 +107,43 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     public JCameraView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
-        //get AttributeSet
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.JCameraView, defStyleAttr, 0);
-        iconSize = a.getDimensionPixelSize(R.styleable.JCameraView_iconSize, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics()));
-        iconMargin = a.getDimensionPixelSize(R.styleable.JCameraView_iconMargin, (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics()));
-        iconSrc = a.getResourceId(R.styleable.JCameraView_iconSrc, R.drawable.ic_camera);
-        iconLeft = a.getResourceId(R.styleable.JCameraView_iconLeft, 0);
-        iconRight = a.getResourceId(R.styleable.JCameraView_iconRight, 0);
-        duration = a.getInteger(R.styleable.JCameraView_duration_max, 10 * 1000);       //没设置默认为10s
-        a.recycle();
-
-        initData();
+        initData(context, attrs, defStyleAttr);
         initView();
+        setView();
     }
 
-    private void initData() {
-        layout_width = ScreenUtils.getScreenWidth(mContext);
-        //缩放梯度
-        zoomGradient = (int) (layout_width / 16f);
-        machine = new CameraMachine(getContext(), this, this);
+    private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
+        mContext = context;
+
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JCameraView, defStyleAttr, 0);
+
+            iconSize = a.getDimensionPixelSize(R.styleable.JCameraView_iconSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 35, getResources().getDisplayMetrics()));
+            iconMargin = a.getDimensionPixelSize(R.styleable.JCameraView_iconMargin, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15, getResources().getDisplayMetrics()));
+            iconSrc = a.getResourceId(R.styleable.JCameraView_iconSrc, R.drawable.ic_camera);
+            iconLeft = a.getResourceId(R.styleable.JCameraView_iconLeft, 0);
+            iconRight = a.getResourceId(R.styleable.JCameraView_iconRight, 0);
+            duration = a.getInteger(R.styleable.JCameraView_duration_max, 10 * 1000);//没设置默认为10s
+
+            a.recycle();
+        }
+
+        machine = new CameraMachine(context, this, this);
     }
 
     private void initView() {
-        setWillNotDraw(false);
-
         View view = LayoutInflater.from(mContext).inflate(R.layout.camera_view, this);
+
         vv_video = view.findViewById(R.id.vv_video);
         iv_photo = view.findViewById(R.id.iv_photo);
         iv_flash = view.findViewById(R.id.iv_flash);
         iv_switch = view.findViewById(R.id.iv_switch);
         layout_capture = view.findViewById(R.id.layout_capture);
         view_foucs = view.findViewById(R.id.view_foucs);
+    }
+
+    private void setView() {
+        setWillNotDraw(false);
 
         iv_switch.setImageResource(iconSrc);
 
@@ -164,6 +162,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         layout_capture.setIconSrc(iconLeft, iconRight);
 
         vv_video.getHolder().addCallback(this);
+
         //切换摄像头
         iv_switch.setOnClickListener(new OnClickListener() {
 
@@ -179,8 +178,10 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
 
         });
+
         //拍照 录像
         layout_capture.setCaptureLisenter(new CaptureListener() {
+
             @Override
             public void takePictures() {
                 iv_switch.setVisibility(INVISIBLE);
@@ -200,11 +201,14 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 layout_capture.setTextWithAnimation("录制时间过短");
                 iv_switch.setVisibility(VISIBLE);
                 iv_flash.setVisibility(VISIBLE);
+
                 postDelayed(new Runnable() {
+
                     @Override
                     public void run() {
                         machine.stopRecord(true, time);
                     }
+
                 }, 1500 - time);
             }
 
@@ -224,9 +228,12 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                     errorLisenter.AudioPermissionError();
                 }
             }
+
         });
+
         //确认 取消
         layout_capture.setTypeLisenter(new TypeListener() {
+
             @Override
             public void cancel() {
                 machine.cancle(vv_video.getHolder(), screenProp);
@@ -236,7 +243,9 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             public void confirm() {
                 machine.confirm();
             }
+
         });
+
         //退出
 //        layout_capture.setReturnLisenter(new ReturnListener() {
 //            @Override
@@ -246,21 +255,27 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 //                }
 //            }
 //        });
+
         layout_capture.setLeftClickListener(new ClickListener() {
+
             @Override
             public void onClick() {
                 if (leftClickListener != null) {
                     leftClickListener.onClick();
                 }
             }
+
         });
+
         layout_capture.setRightClickListener(new ClickListener() {
+
             @Override
             public void onClick() {
                 if (rightClickListener != null) {
                     rightClickListener.onClick();
                 }
             }
+
         });
     }
 
@@ -315,7 +330,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         CameraInterface.getInstance().doDestroyCamera();
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -347,11 +361,10 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                         firstTouchLength = result;
                         firstTouch = false;
                     }
-                    if ((int) (result - firstTouchLength) / zoomGradient != 0) {
+                    if ((int) (result - firstTouchLength) / (getWidth() / 16) != 0) {
                         firstTouch = true;
                         machine.zoom(result - firstTouchLength, CameraInterface.TYPE_CAPTURE);
                     }
-//                    Log.i("CJT", "result = " + (result - firstTouchLength));
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -546,8 +559,9 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         if (x < view_foucs.getWidth() / 2) {
             x = view_foucs.getWidth() / 2;
         }
-        if (x > layout_width - view_foucs.getWidth() / 2) {
-            x = layout_width - view_foucs.getWidth() / 2;
+        int len = getWidth() - (view_foucs.getWidth() / 2);
+        if (x > len) {
+            x = len;
         }
         if (y < view_foucs.getWidth() / 2) {
             y = view_foucs.getWidth() / 2;
@@ -577,18 +591,28 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private void setFlashRes() {
         switch (type_flash) {
-            case TYPE_FLASH_AUTO:
+
+            case TYPE_FLASH_AUTO: {//自动闪光
                 iv_flash.setImageResource(R.drawable.ic_flash_auto);
                 machine.flash(Camera.Parameters.FLASH_MODE_AUTO);
-                break;
-            case TYPE_FLASH_ON:
+            }
+            break;
+
+            case TYPE_FLASH_ON: {//开启闪光
                 iv_flash.setImageResource(R.drawable.ic_flash_on);
                 machine.flash(Camera.Parameters.FLASH_MODE_ON);
-                break;
-            case TYPE_FLASH_OFF:
+            }
+            break;
+
+            case TYPE_FLASH_OFF: {//关闭闪光
                 iv_flash.setImageResource(R.drawable.ic_flash_off);
                 machine.flash(Camera.Parameters.FLASH_MODE_OFF);
+            }
+            break;
+
+            default:
                 break;
+
         }
     }
 

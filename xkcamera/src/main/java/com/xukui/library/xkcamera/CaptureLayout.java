@@ -295,7 +295,6 @@ public class CaptureLayout extends FrameLayout {
             iv_custom_right.setVisibility(VISIBLE);
     }
 
-
     public void startAlphaAnimation() {
         if (isFirst) {
             ObjectAnimator animator_txt_tip = ObjectAnimator.ofFloat(txt_tip, "alpha", 1f, 0f);
