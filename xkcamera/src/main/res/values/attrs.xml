@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="max_duration" format="integer" />
+    <attr name="min_duration" format="integer" />
+
     <declare-styleable name="JCameraView">
-        <attr name="max_duration" format="integer" />
+        <attr name="max_duration"/>
+        <attr name="min_duration"/>
     </declare-styleable>
 
     <declare-styleable name="CaptureButton">
         <attr name="size" format="dimension" />
+        <attr name="max_duration"/>
+        <attr name="min_duration"/>
     </declare-styleable>
 
 </resources>

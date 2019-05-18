@@ -68,7 +68,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private Context mContext;
 
     private int mFlashType = TYPE_FLASH_OFF;
-    private int mMaxDuration = 15000;//视频录制最长时间
+    private int mMaxDuration;//视频录制最长时间
+    private int mMinDuration;//视频录制最短时间
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
     private float mFirstTouchLength;
@@ -99,10 +100,13 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
         mContext = context;
+        mMaxDuration = 15000;
+        mMinDuration = 3000;
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JCameraView, defStyleAttr, 0);
             mMaxDuration = a.getInteger(R.styleable.JCameraView_max_duration, mMaxDuration);
+            mMinDuration = a.getInteger(R.styleable.JCameraView_min_duration, mMinDuration);
             a.recycle();
         }
 
@@ -154,7 +158,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         });
 
         //拍照、录像
-        layout_capture.setDuration(mMaxDuration);
+        layout_capture.setMaxDuration(mMaxDuration);
+        layout_capture.setMinDuration(mMinDuration);
         layout_capture.setOnItemClickListener(new CaptureLayout.OnItemClickListener() {
 
             @Override
