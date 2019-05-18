@@ -24,12 +24,6 @@ public class CaptureLayout extends FrameLayout {
 
     private OnItemClickListener mOnItemClickListener;
 
-    private CaptureListener captureLisenter;    //拍照按钮监听
-
-    public void setCaptureLisenter(CaptureListener captureLisenter) {
-        this.captureLisenter = captureLisenter;
-    }
-
     public CaptureLayout(Context context) {
         this(context, null);
     }
@@ -103,8 +97,8 @@ public class CaptureLayout extends FrameLayout {
             public void takePictures() {
                 hideTipView();
 
-                if (captureLisenter != null) {
-                    captureLisenter.takePictures();
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onTakePicture();
                 }
             }
 
@@ -126,19 +120,17 @@ public class CaptureLayout extends FrameLayout {
 
                     @Override
                     public void onAnimationCancel(Animator animator) {
-
                     }
 
                     @Override
                     public void onAnimationRepeat(Animator animator) {
-
                     }
 
                 });
                 animator.start();
 
-                if (captureLisenter != null) {
-                    captureLisenter.recordShort(time);
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onRecordShort(time);
                 }
             }
 
@@ -146,8 +138,8 @@ public class CaptureLayout extends FrameLayout {
             public void recordStart() {
                 hideTipView();
 
-                if (captureLisenter != null) {
-                    captureLisenter.recordStart();
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onRecordStart();
                 }
             }
 
@@ -155,22 +147,22 @@ public class CaptureLayout extends FrameLayout {
             public void recordEnd(long time) {
                 startTypeBtnAnimator();
 
-                if (captureLisenter != null) {
-                    captureLisenter.recordEnd(time);
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onRecordEnd(time);
                 }
             }
 
             @Override
             public void recordZoom(float zoom) {
-                if (captureLisenter != null) {
-                    captureLisenter.recordZoom(zoom);
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onRecordZoom(zoom);
                 }
             }
 
             @Override
             public void recordError() {
-                if (captureLisenter != null) {
-                    captureLisenter.recordError();
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onRecordError();
                 }
             }
 
@@ -259,6 +251,18 @@ public class CaptureLayout extends FrameLayout {
         void onCancelClick();
 
         void onConfirmClick();
+
+        void onTakePicture();
+
+        void onRecordStart();
+
+        void onRecordEnd(long time);
+
+        void onRecordShort(long time);
+
+        void onRecordError();
+
+        void onRecordZoom(float zoom);
 
     }
 

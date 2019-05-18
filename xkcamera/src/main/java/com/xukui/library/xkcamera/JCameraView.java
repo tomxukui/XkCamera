@@ -20,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
-import com.xukui.library.xkcamera.listener.CaptureListener;
 import com.xukui.library.xkcamera.listener.JCameraListener;
 import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
@@ -173,26 +172,27 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 mMachine.confirm();
             }
 
-        });
-
-        layout_capture.setCaptureLisenter(new CaptureListener() {
-
             @Override
-            public void takePictures() {
+            public void onTakePicture() {
                 iv_switch.setVisibility(INVISIBLE);
                 iv_flash.setVisibility(INVISIBLE);
                 mMachine.capture();
             }
 
             @Override
-            public void recordStart() {
+            public void onRecordStart() {
                 iv_switch.setVisibility(INVISIBLE);
                 iv_flash.setVisibility(INVISIBLE);
                 mMachine.record(v_preview.getHolder().getSurface(), mScreenProp);
             }
 
             @Override
-            public void recordShort(final long time) {
+            public void onRecordEnd(long time) {
+                mMachine.stopRecord(false, time);
+            }
+
+            @Override
+            public void onRecordShort(final long time) {
                 iv_switch.setVisibility(VISIBLE);
                 iv_flash.setVisibility(VISIBLE);
 
@@ -207,33 +207,18 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
 
             @Override
-            public void recordEnd(long time) {
-                mMachine.stopRecord(false, time);
-            }
-
-            @Override
-            public void recordZoom(float zoom) {
-                mMachine.zoom(zoom, CameraInterface.TYPE_RECORDER);
-            }
-
-            @Override
-            public void recordError() {
+            public void onRecordError() {
                 if (mOnErrorListener != null) {
                     mOnErrorListener.onRecordError();
                 }
             }
 
-        });
+            @Override
+            public void onRecordZoom(float zoom) {
+                mMachine.zoom(zoom, CameraInterface.TYPE_RECORDER);
+            }
 
-        //退出
-//        layout_capture.setReturnLisenter(new ReturnListener() {
-//            @Override
-//            public void onReturn() {
-//                if (jCameraLisenter != null) {
-//                    jCameraLisenter.quit();
-//                }
-//            }
-//        });
+        });
     }
 
     @Override
