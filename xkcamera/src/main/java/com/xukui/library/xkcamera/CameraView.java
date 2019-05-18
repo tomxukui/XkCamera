@@ -540,13 +540,14 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         iv_foucs.setVisibility(VISIBLE);
         iv_foucs.setX(x - halfWidth);
         iv_foucs.setY(y - halfHeight);
+        iv_foucs.clearAnimation();
 
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(iv_foucs, "scaleX", 1, 0.6f);
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(iv_foucs, "scaleY", 1, 0.6f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(iv_foucs, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(iv_foucs, "alpha", 1f, 0.2f, 1f, 0.2f, 1f, 0.2f, 1f);
         AnimatorSet animSet = new AnimatorSet();
         animSet.play(scaleX).with(scaleY).before(alpha);
-        animSet.setDuration(400);
+        animSet.setDuration(300);
         animSet.start();
         return true;
     }

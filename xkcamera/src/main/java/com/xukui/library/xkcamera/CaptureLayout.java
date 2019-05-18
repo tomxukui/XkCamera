@@ -245,6 +245,7 @@ public class CaptureLayout extends FrameLayout {
     }
 
     private void showTipView() {
+        tv_tip.clearAnimation();
         tv_tip.setText("轻触拍照, 长按摄像");
 
         ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f)
@@ -253,9 +254,11 @@ public class CaptureLayout extends FrameLayout {
     }
 
     private void hideTipView() {
+        tv_tip.clearAnimation();
+
         if (tv_tip.getAlpha() > 0) {
             ObjectAnimator.ofFloat(tv_tip, "alpha", 1f, 0f)
-                    .setDuration(500)
+                    .setDuration(300)
                     .start();
         }
     }
