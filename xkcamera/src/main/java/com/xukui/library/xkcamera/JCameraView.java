@@ -106,7 +106,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             a.recycle();
         }
 
-        mMachine = new CameraMachine(context, this, this);
+        mMachine = new CameraMachine(context, this);
     }
 
     private void initView(Context context) {
@@ -510,16 +510,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
-    }
-
-    @Override
-    public void setTip(String tip) {
-        layout_capture.setTip(tip);
-    }
-
-    @Override
-    public void startPreviewCallback() {
-        handlerFoucs(iv_foucs.getWidth() / 2, iv_foucs.getHeight() / 2);
     }
 
     @Override

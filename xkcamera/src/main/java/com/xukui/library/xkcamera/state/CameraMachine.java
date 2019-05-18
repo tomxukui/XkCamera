@@ -17,7 +17,7 @@ public class CameraMachine implements State {
     private State borrowPictureState; //浏览图片
     private State borrowVideoState;   //浏览视频
 
-    public CameraMachine(Context context, CameraView view, CameraInterface.CameraOpenOverCallback cameraOpenOverCallback) {
+    public CameraMachine(Context context, CameraView view) {
         this.context = context;
         previewState = new PreviewState(this);
         borrowPictureState = new BorrowPictureState(this);
@@ -118,4 +118,5 @@ public class CameraMachine implements State {
     public State getState() {
         return this.state;
     }
+
 }

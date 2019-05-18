@@ -14,10 +14,6 @@ public interface CameraView {
 
     void stopVideo();
 
-    void setTip(String tip);
-
-    void startPreviewCallback();
-
     boolean handlerFoucs(float x, float y);
 
 }

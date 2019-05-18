@@ -233,9 +233,6 @@ public class CaptureLayout extends FrameLayout {
         set.start();
     }
 
-    /**************************************************
-     * 对外提供的API                      *
-     **************************************************/
     public void reset() {
         if (btn_capture.getVisibility() == View.VISIBLE) {
             btn_capture.resetState();
@@ -272,10 +269,6 @@ public class CaptureLayout extends FrameLayout {
 
     public void setButtonFeatures(int state) {
         btn_capture.setButtonFeatures(state);
-    }
-
-    public void setTip(String tip) {
-        tv_tip.setText(tip);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
