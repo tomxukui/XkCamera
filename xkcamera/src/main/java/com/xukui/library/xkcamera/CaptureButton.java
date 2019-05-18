@@ -149,25 +149,26 @@ public class CaptureButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
 
-            case MotionEvent.ACTION_DOWN:
-                if (event.getPointerCount() > 1 || mState != STATE_IDLE)
-                    break;
-                mEventY = event.getY();     //记录Y值
-                mState = STATE_PRESS;        //修改当前状态为点击按下
+            case MotionEvent.ACTION_DOWN: {
+                if (event.getPointerCount() == 1 && mState == STATE_IDLE) {
+                    mEventY = event.getY();
+                    mState = STATE_PRESS;
 
-                //判断按钮状态是否为可录制状态
-                if ((mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH))
-                    postDelayed(mLongPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
-                break;
+                    //判断按钮状态是否为可录制状态
+                    if ((mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
+                        postDelayed(mLongPressRunnable, 500);
+                    }
+                }
+            }
+            break;
 
-            case MotionEvent.ACTION_MOVE:
-                if (mOnCaptureListener != null
-                        && mState == STATE_RECORDERING
-                        && (mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
+            case MotionEvent.ACTION_MOVE: {
+                if (mOnCaptureListener != null && mState == STATE_RECORDERING && (mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
                     //记录当前Y值与按下时候Y值的差值，调用缩放回调接口
                     mOnCaptureListener.onRecordZoom(mEventY - event.getY());
                 }
-                break;
+            }
+            break;
 
             case MotionEvent.ACTION_UP:
                 //根据当前按钮的状态进行相应的处理
