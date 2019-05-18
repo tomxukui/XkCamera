@@ -5,19 +5,19 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.xukui.library.xkcamera.CameraInterface;
-import com.xukui.library.xkcamera.view.CameraView;
+import com.xukui.library.xkcamera.ICameraView;
 
 public class CameraMachine implements State {
 
     private Context context;
     private State state;
-    private CameraView view;
+    private ICameraView view;
 
     private State previewState;       //浏览状态(空闲)
     private State borrowPictureState; //浏览图片
     private State borrowVideoState;   //浏览视频
 
-    public CameraMachine(Context context, CameraView view) {
+    public CameraMachine(Context context, ICameraView view) {
         this.context = context;
         previewState = new PreviewState(this);
         borrowPictureState = new BorrowPictureState(this);
@@ -27,7 +27,7 @@ public class CameraMachine implements State {
         this.view = view;
     }
 
-    public CameraView getView() {
+    public ICameraView getView() {
         return view;
     }
 

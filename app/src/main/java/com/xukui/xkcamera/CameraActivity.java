@@ -14,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.xukui.library.xkcamera.JCameraView;
+import com.xukui.library.xkcamera.CameraView;
 
 import java.io.File;
 
@@ -22,7 +22,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
 
-    private JCameraView view_camera;
+    private CameraView view_camera;
 
     private boolean granted = false;
 
@@ -37,7 +37,7 @@ public class CameraActivity extends AppCompatActivity {
         view_camera.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "JCamera");
 
         //JCameraView监听
-        view_camera.setOnCameraListener(new JCameraView.OnCameraListener() {
+        view_camera.setOnCameraListener(new CameraView.OnCameraListener() {
 
             @Override
             public void onPhoto(Bitmap bitmap) {

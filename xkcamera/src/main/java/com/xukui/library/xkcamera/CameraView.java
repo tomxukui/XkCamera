@@ -23,11 +23,10 @@ import android.widget.VideoView;
 import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
-import com.xukui.library.xkcamera.view.CameraView;
 
 import java.io.IOException;
 
-public class JCameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder.Callback, CameraView {
+public class CameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder.Callback, ICameraView {
 
     //闪关灯状态
     private static final int TYPE_FLASH_AUTO = 0x021;
@@ -81,15 +80,15 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private OnCameraListener mOnCameraListener;
 
-    public JCameraView(Context context) {
+    public CameraView(Context context) {
         this(context, null);
     }
 
-    public JCameraView(Context context, AttributeSet attrs) {
+    public CameraView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public JCameraView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CameraView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initData(context, attrs, defStyleAttr);
         initView(context);
@@ -263,7 +262,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
             @Override
             public void run() {
-                CameraInterface.getInstance().doOpenCamera(JCameraView.this);
+                CameraInterface.getInstance().doOpenCamera(CameraView.this);
             }
 
         }.start();
@@ -464,7 +463,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     public void playVideo(Bitmap firstFrame, final String url) {
         mVideoUrl = url;
-        JCameraView.this.firstFrame = firstFrame;
+        CameraView.this.firstFrame = firstFrame;
 
         new Thread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

@@ -84,7 +84,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     private int recordScleRate = 0;
 
     //视频质量
-    private int mediaQuality = JCameraView.MEDIA_QUALITY_MIDDLE;
+    private int mediaQuality = CameraView.MEDIA_QUALITY_MIDDLE;
     private SensorManager sm = null;
 
     //获取CameraInterface单例
@@ -637,8 +637,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         int left = clamp(centerX - areaSize / 2, -1000, 1000);
         int top = clamp(centerY - areaSize / 2, -1000, 1000);
         RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
-        return new Rect(Math.round(rectF.left), Math.round(rectF.top), Math.round(rectF.right), Math.round(rectF
-                .bottom));
+        return new Rect(Math.round(rectF.left), Math.round(rectF.top), Math.round(rectF.right), Math.round(rectF.bottom));
     }
 
     private static int clamp(int x, int min, int max) {

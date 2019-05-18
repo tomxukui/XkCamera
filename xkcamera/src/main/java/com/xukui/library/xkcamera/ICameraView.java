@@ -1,8 +1,8 @@
-package com.xukui.library.xkcamera.view;
+package com.xukui.library.xkcamera;
 
 import android.graphics.Bitmap;
 
-public interface CameraView {
+public interface ICameraView {
 
     void resetState(int type);
 

@@ -4,11 +4,10 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.xukui.library.xkcamera.CameraInterface;
-import com.xukui.library.xkcamera.JCameraView;
+import com.xukui.library.xkcamera.CameraView;
 
 public class BorrowVideoState implements State {
 
-    private final String TAG = "BorrowVideoState";
     private CameraMachine machine;
 
     public BorrowVideoState(CameraMachine machine) {
@@ -57,13 +56,13 @@ public class BorrowVideoState implements State {
 
     @Override
     public void cancle(SurfaceHolder holder, float screenProp) {
-        machine.getView().resetState(JCameraView.TYPE_VIDEO);
+        machine.getView().resetState(CameraView.TYPE_VIDEO);
         machine.setState(machine.getPreviewState());
     }
 
     @Override
     public void confirm() {
-        machine.getView().confirmState(JCameraView.TYPE_VIDEO);
+        machine.getView().confirmState(CameraView.TYPE_VIDEO);
         machine.setState(machine.getPreviewState());
     }
 

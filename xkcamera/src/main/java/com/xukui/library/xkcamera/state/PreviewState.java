@@ -5,7 +5,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.xukui.library.xkcamera.CameraInterface;
-import com.xukui.library.xkcamera.JCameraView;
+import com.xukui.library.xkcamera.CameraView;
 
 class PreviewState implements State {
 
@@ -66,7 +66,7 @@ class PreviewState implements State {
             @Override
             public void recordResult(String url, Bitmap firstFrame) {
                 if (isShort) {
-                    machine.getView().resetState(JCameraView.TYPE_SHORT);
+                    machine.getView().resetState(CameraView.TYPE_SHORT);
 
                 } else {
                     machine.getView().playVideo(firstFrame, url);
@@ -94,4 +94,5 @@ class PreviewState implements State {
     public void flash(String mode) {
         CameraInterface.getInstance().setFlashMode(mode);
     }
+
 }

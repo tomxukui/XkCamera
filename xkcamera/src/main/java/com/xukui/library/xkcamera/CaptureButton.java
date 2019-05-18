@@ -17,9 +17,9 @@ import android.view.View;
 
 import com.xukui.library.xkcamera.util.CheckPermission;
 
-import static com.xukui.library.xkcamera.JCameraView.BUTTON_STATE_BOTH;
-import static com.xukui.library.xkcamera.JCameraView.BUTTON_STATE_ONLY_CAPTURE;
-import static com.xukui.library.xkcamera.JCameraView.BUTTON_STATE_ONLY_RECORDER;
+import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_BOTH;
+import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_ONLY_CAPTURE;
+import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_ONLY_RECORDER;
 
 public class CaptureButton extends View {
 
