@@ -21,7 +21,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import com.xukui.library.xkcamera.listener.ErrorListener;
+import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.util.AngleUtil;
 import com.xukui.library.xkcamera.util.CameraParamUtil;
 import com.xukui.library.xkcamera.util.CheckPermission;
@@ -66,7 +66,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     private String videoFileAbsPath;
     private Bitmap videoFirstFrame;
 
-    private ErrorListener errorLisenter;
+    private OnErrorListener mOnErrorListener;
 
     private ImageView mSwitchView;
     private ImageView mFlashLamp;
@@ -214,8 +214,8 @@ public class CameraInterface implements Camera.PreviewCallback {
      */
     void doOpenCamera(CameraOpenOverCallback callback) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (!CheckPermission.isCameraUseable(SELECTED_CAMERA) && this.errorLisenter != null) {
-                this.errorLisenter.onError();
+            if (!CheckPermission.isCameraUseable(SELECTED_CAMERA) && mOnErrorListener != null) {
+                mOnErrorListener.onError();
                 return;
             }
         }
@@ -236,8 +236,8 @@ public class CameraInterface implements Camera.PreviewCallback {
             this.mCamera = Camera.open(id);
         } catch (Exception var3) {
             var3.printStackTrace();
-            if (this.errorLisenter != null) {
-                this.errorLisenter.onError();
+            if (mOnErrorListener != null) {
+                mOnErrorListener.onError();
             }
         }
 
@@ -343,7 +343,7 @@ public class CameraInterface implements Camera.PreviewCallback {
      * 销毁Camera
      */
     void doDestroyCamera() {
-        errorLisenter = null;
+        mOnErrorListener = null;
 
         if (null != mCamera) {
             try {
@@ -517,20 +517,22 @@ public class CameraInterface implements Camera.PreviewCallback {
             mediaRecorder.prepare();
             mediaRecorder.start();
             isRecorder = true;
+
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            Log.i("CJT", "startRecord IllegalStateException");
-            if (this.errorLisenter != null) {
-                this.errorLisenter.onError();
+
+            if (mOnErrorListener != null) {
+                mOnErrorListener.onError();
             }
+
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("CJT", "startRecord IOException");
-            if (this.errorLisenter != null) {
-                this.errorLisenter.onError();
+
+            if (mOnErrorListener != null) {
+                mOnErrorListener.onError();
             }
+
         } catch (RuntimeException e) {
-            Log.i("CJT", "startRecord RuntimeException");
         }
     }
 
@@ -649,8 +651,8 @@ public class CameraInterface implements Camera.PreviewCallback {
         return x;
     }
 
-    void setErrorLinsenter(ErrorListener errorLisenter) {
-        this.errorLisenter = errorLisenter;
+    void setOnErrorListener(OnErrorListener listener) {
+        mOnErrorListener = listener;
     }
 
 

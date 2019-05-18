@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,8 +22,8 @@ import android.widget.VideoView;
 
 import com.xukui.library.xkcamera.listener.CaptureListener;
 import com.xukui.library.xkcamera.listener.ClickListener;
-import com.xukui.library.xkcamera.listener.ErrorListener;
 import com.xukui.library.xkcamera.listener.JCameraListener;
+import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.listener.TypeListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
@@ -82,6 +81,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private Bitmap firstFrame;//第一帧图片
 
     //回调监听
+    private OnErrorListener mOnErrorListener;
+
     private JCameraListener jCameraLisenter;
     private ClickListener leftClickListener;
     private ClickListener rightClickListener;
@@ -154,14 +155,11 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
         });
 
-
-        layout_capture.setDuration(mMaxDuration);
-
-
+        //预览
         v_preview.getHolder().addCallback(this);
 
-
-        //拍照 录像
+        //拍照、录像
+        layout_capture.setDuration(mMaxDuration);
         layout_capture.setCaptureLisenter(new CaptureListener() {
 
             @Override
@@ -206,14 +204,12 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
             @Override
             public void recordError() {
-                if (errorLisenter != null) {
-                    errorLisenter.AudioPermissionError();
+                if (mOnErrorListener != null) {
+                    mOnErrorListener.onRecordError();
                 }
             }
 
         });
-
-        //确认 取消
         layout_capture.setTypeLisenter(new TypeListener() {
 
             @Override
@@ -264,9 +260,10 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        float widthSize = v_preview.getMeasuredWidth();
-        float heightSize = v_preview.getMeasuredHeight();
         if (mScreenProp == 0) {
+            float widthSize = v_preview.getMeasuredWidth();
+            float heightSize = v_preview.getMeasuredHeight();
+
             mScreenProp = heightSize / widthSize;
         }
     }
@@ -296,10 +293,12 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         new Thread() {
+
             @Override
             public void run() {
                 CameraInterface.getInstance().doOpenCamera(JCameraView.this);
             }
+
         }.start();
     }
 
@@ -315,48 +314,58 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+
+            case MotionEvent.ACTION_DOWN: {
                 if (event.getPointerCount() == 1) {
-                    //显示对焦指示器
-                    setFocusViewWidthAnimation(event.getX(), event.getY());
+                    setFocusViewWidthAnimation(event.getX(), event.getY());//显示对焦指示器
                 }
-                if (event.getPointerCount() == 2) {
-                    Log.i("CJT", "ACTION_DOWN = " + 2);
-                }
-                break;
-            case MotionEvent.ACTION_MOVE:
+            }
+            break;
+
+            case MotionEvent.ACTION_MOVE: {
                 if (event.getPointerCount() == 1) {
                     mFirstTouch = true;
-                }
-                if (event.getPointerCount() == 2) {
+
+                } else if (event.getPointerCount() == 2) {
                     //第一个点
                     float point_1_X = event.getX(0);
                     float point_1_Y = event.getY(0);
+
                     //第二个点
                     float point_2_X = event.getX(1);
                     float point_2_Y = event.getY(1);
 
-                    float result = (float) Math.sqrt(Math.pow(point_1_X - point_2_X, 2) + Math.pow(point_1_Y -
-                            point_2_Y, 2));
+                    float result = (float) Math.sqrt(Math.pow(point_1_X - point_2_X, 2) + Math.pow(point_1_Y - point_2_Y, 2));
 
                     if (mFirstTouch) {
                         mFirstTouchLength = result;
                         mFirstTouch = false;
                     }
-                    if ((int) (result - mFirstTouchLength) / (getWidth() / 16) != 0) {
+
+                    if (((int) ((result - mFirstTouchLength) / (getWidth() / 16))) != 0) {
                         mFirstTouch = true;
                         mMachine.zoom(result - mFirstTouchLength, CameraInterface.TYPE_CAPTURE);
                     }
                 }
-                break;
-            case MotionEvent.ACTION_UP:
+            }
+            break;
+
+            case MotionEvent.ACTION_UP: {
                 mFirstTouch = true;
+            }
+            break;
+
+            default:
                 break;
+
         }
+
         return true;
     }
 
-    //对焦框指示器动画
+    /**
+     * 对焦框指示器动画
+     */
     private void setFocusViewWidthAnimation(float x, float y) {
         mMachine.foucs(x, y, new CameraInterface.FocusCallback() {
 
@@ -370,9 +379,8 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     private void updateVideoViewSize(float videoWidth, float videoHeight) {
         if (videoWidth > videoHeight) {
-            LayoutParams videoViewParam;
             int height = (int) ((videoHeight / videoWidth) * getWidth());
-            videoViewParam = new LayoutParams(LayoutParams.MATCH_PARENT, height);
+            LayoutParams videoViewParam = new LayoutParams(LayoutParams.MATCH_PARENT, height);
             videoViewParam.gravity = Gravity.CENTER;
             v_preview.setLayoutParams(videoViewParam);
         }
@@ -391,13 +399,13 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         this.jCameraLisenter = jCameraLisenter;
     }
 
+    /**
+     * 启动Camera错误回调
+     */
+    public void setOnErrorListener(OnErrorListener listener) {
+        mOnErrorListener = listener;
 
-    private ErrorListener errorLisenter;
-
-    //启动Camera错误回调
-    public void setErrorLisenter(ErrorListener errorLisenter) {
-        this.errorLisenter = errorLisenter;
-        CameraInterface.getInstance().setErrorLinsenter(errorLisenter);
+        CameraInterface.getInstance().setOnErrorListener(listener);
     }
 
     //设置CaptureButton功能（拍照和录像）
@@ -413,22 +421,34 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     public void resetState(int type) {
         switch (type) {
-            case TYPE_VIDEO:
-                stopVideo();    //停止播放
+
+            case TYPE_VIDEO: {
+                stopVideo();//停止播放
+
                 //初始化VideoView
                 FileUtil.deleteFile(mVideoUrl);
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMachine.start(v_preview.getHolder(), mScreenProp);
-                break;
-            case TYPE_PICTURE:
+            }
+            break;
+
+            case TYPE_PICTURE: {
                 iv_photo.setVisibility(INVISIBLE);
-                break;
+            }
+            break;
+
             case TYPE_SHORT:
                 break;
-            case TYPE_DEFAULT:
+
+            case TYPE_DEFAULT: {
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            }
+            break;
+
+            default:
                 break;
         }
+
         iv_switch.setVisibility(VISIBLE);
         iv_flash.setVisibility(VISIBLE);
         layout_capture.resetCaptureLayout();
@@ -437,25 +457,36 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     @Override
     public void confirmState(int type) {
         switch (type) {
-            case TYPE_VIDEO:
+
+            case TYPE_VIDEO: {
                 stopVideo();    //停止播放
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMachine.start(v_preview.getHolder(), mScreenProp);
                 if (jCameraLisenter != null) {
                     jCameraLisenter.recordSuccess(mVideoUrl, firstFrame);
                 }
-                break;
-            case TYPE_PICTURE:
+            }
+            break;
+
+            case TYPE_PICTURE: {
                 iv_photo.setVisibility(INVISIBLE);
                 if (jCameraLisenter != null) {
                     jCameraLisenter.captureSuccess(captureBitmap);
                 }
-                break;
+            }
+            break;
+
             case TYPE_SHORT:
                 break;
+
             case TYPE_DEFAULT:
                 break;
+
+            default:
+                break;
+
         }
+
         layout_capture.resetCaptureLayout();
     }
 
@@ -463,9 +494,11 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     public void showPicture(Bitmap bitmap, boolean isVertical) {
         if (isVertical) {
             iv_photo.setScaleType(ImageView.ScaleType.FIT_XY);
+
         } else {
             iv_photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
         }
+
         captureBitmap = bitmap;
         iv_photo.setImageBitmap(bitmap);
         iv_photo.setVisibility(VISIBLE);
@@ -477,6 +510,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     public void playVideo(Bitmap firstFrame, final String url) {
         mVideoUrl = url;
         JCameraView.this.firstFrame = firstFrame;
+
         new Thread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override

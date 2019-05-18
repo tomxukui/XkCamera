@@ -1,9 +1,9 @@
 package com.xukui.library.xkcamera.listener;
 
-public interface ErrorListener {
+public interface OnErrorListener {
 
     void onError();
 
-    void AudioPermissionError();
+    void onRecordError();
 
 }
