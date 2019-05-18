@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.VideoView;
 
 import com.xukui.library.xkcamera.listener.CaptureListener;
-import com.xukui.library.xkcamera.listener.ClickListener;
 import com.xukui.library.xkcamera.listener.JCameraListener;
 import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
@@ -83,8 +82,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private OnErrorListener mOnErrorListener;
 
     private JCameraListener jCameraLisenter;
-    private ClickListener leftClickListener;
-    private ClickListener rightClickListener;
 
     public JCameraView(Context context) {
         this(context, null);
@@ -178,7 +175,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
         });
 
-
         layout_capture.setCaptureLisenter(new CaptureListener() {
 
             @Override
@@ -197,7 +193,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
             @Override
             public void recordShort(final long time) {
-                layout_capture.setTextWithAnimation("录制时间过短");
+                layout_capture.showTipView("录制时间过短", true);
                 iv_switch.setVisibility(VISIBLE);
                 iv_flash.setVisibility(VISIBLE);
 
@@ -239,28 +235,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 //                }
 //            }
 //        });
-
-        layout_capture.setLeftClickListener(new ClickListener() {
-
-            @Override
-            public void onClick() {
-                if (leftClickListener != null) {
-                    leftClickListener.onClick();
-                }
-            }
-
-        });
-
-        layout_capture.setRightClickListener(new ClickListener() {
-
-            @Override
-            public void onClick() {
-                if (rightClickListener != null) {
-                    rightClickListener.onClick();
-                }
-            }
-
-        });
     }
 
     @Override
@@ -508,7 +482,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         captureBitmap = bitmap;
         iv_photo.setImageBitmap(bitmap);
         iv_photo.setVisibility(VISIBLE);
-        layout_capture.startAlphaAnimation();
+//        layout_capture.startAlphaAnimation();
         layout_capture.startTypeBtnAnimator();
     }
 
@@ -609,14 +583,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         animSet.setDuration(400);
         animSet.start();
         return true;
-    }
-
-    public void setLeftClickListener(ClickListener clickListener) {
-        this.leftClickListener = clickListener;
-    }
-
-    public void setRightClickListener(ClickListener clickListener) {
-        this.rightClickListener = clickListener;
     }
 
     /**

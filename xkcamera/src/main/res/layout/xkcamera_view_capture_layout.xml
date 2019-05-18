@@ -20,7 +20,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp">
 
             <ImageView
                 android:id="@+id/iv_back"
@@ -33,19 +34,25 @@
 
             <ImageView
                 android:id="@+id/iv_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_cancel_circle"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/iv_confirm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_sure_circle"
                 android:visibility="gone" />
+
+            <com.xukui.library.xkcamera.CaptureButton
+                android:id="@+id/btn_capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
         </FrameLayout>
 

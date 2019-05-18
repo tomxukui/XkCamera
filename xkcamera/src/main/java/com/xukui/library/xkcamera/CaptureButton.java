@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -64,11 +66,22 @@ public class CaptureButton extends View {
     private RecordCountDownTimer timer;             //计时器
 
     public CaptureButton(Context context) {
-        super(context);
+        this(context, null);
     }
 
-    public CaptureButton(Context context, int size) {
-        super(context);
+    public CaptureButton(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public CaptureButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        int size = 200;
+
         this.button_size = size;
         button_radius = size / 2.0f;
 
@@ -100,6 +113,10 @@ public class CaptureButton extends View {
                 center_Y + (button_radius + outside_add_size - strokeWidth / 2));
 
         timer = new RecordCountDownTimer(duration, duration / 360);    //录制定时器
+    }
+
+    private void initView() {
+
     }
 
     @Override
