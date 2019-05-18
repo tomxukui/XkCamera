@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -29,6 +30,15 @@ public class CaptureButton extends View {
     public static final int STATE_RECORDERING = 0x004;//录制状态
     public static final int STATE_BAN = 0x005;//禁止状态
 
+    private int mSize;//按钮尺寸
+    private float mRadius;//按钮半径
+    private float mOutRadius;//外圆半径
+    private float mInRadius;//内圆半径
+    private float mStrokeWidth;//进度条宽度
+    private int mOutAddSize;//长按外圆半径变大的Size
+    private int mInReduceSize;//长按内圆缩小的Size
+
+
     private int state;              //当前按钮状态
     private int button_state;       //按钮可执行的功能状态（拍照,录制,两者）
 
@@ -41,18 +51,13 @@ public class CaptureButton extends View {
 
     private Paint mPaint;
 
-    private float strokeWidth;          //进度条宽度
-    private int outside_add_size;       //长按外圆半径变大的Size
-    private int inside_reduce_size;     //长安内圆缩小的Size
+
+
 
     //中心坐标
     private float center_X;
     private float center_Y;
 
-    private float button_radius;            //按钮半径
-    private float button_outside_radius;    //外圆半径
-    private float button_inside_radius;     //内圆半径
-    private int button_size;                //按钮大小
 
     private float progress;         //录制视频的进度
     private int duration;           //录制视频最大时间长度
@@ -65,8 +70,11 @@ public class CaptureButton extends View {
     private CaptureListener captureLisenter;        //按钮回调接口
     private RecordCountDownTimer timer;             //计时器
 
-    public CaptureButton(Context context) {
-        this(context, null);
+    public CaptureButton(Context context, int buttonSize) {
+        super(context);
+        mSize = buttonSize;
+        initData(context, null, 0);
+        initView();
     }
 
     public CaptureButton(Context context, @Nullable AttributeSet attrs) {
@@ -75,22 +83,23 @@ public class CaptureButton extends View {
 
     public CaptureButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initData();
+        initData(context, attrs, defStyleAttr);
         initView();
     }
 
-    private void initData() {
-        int size = 200;
+    private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CaptureButton, defStyleAttr, 0);
+            mSize = a.getDimensionPixelOffset(R.styleable.CaptureButton_size, 200);
+            a.recycle();
+        }
 
-        this.button_size = size;
-        button_radius = size / 2.0f;
-
-        button_outside_radius = button_radius;
-        button_inside_radius = button_radius * 0.75f;
-
-        strokeWidth = size / 15;
-        outside_add_size = size / 5;
-        inside_reduce_size = size / 8;
+        mRadius = mSize / 2.0f;
+        mOutRadius = mRadius;
+        mInRadius = mRadius * 0.75f;
+        mStrokeWidth = mSize / 15;
+        mOutAddSize = mSize / 5;
+        mInReduceSize = mSize / 8;
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -103,14 +112,14 @@ public class CaptureButton extends View {
         duration = 10 * 1000;              //默认最长录制时间为10s
         min_duration = 1500;              //默认最短录制时间为1.5s
 
-        center_X = (button_size + outside_add_size * 2) / 2;
-        center_Y = (button_size + outside_add_size * 2) / 2;
+        center_X = (mSize + mOutAddSize * 2) / 2;
+        center_Y = (mSize + mOutAddSize * 2) / 2;
 
         rectF = new RectF(
-                center_X - (button_radius + outside_add_size - strokeWidth / 2),
-                center_Y - (button_radius + outside_add_size - strokeWidth / 2),
-                center_X + (button_radius + outside_add_size - strokeWidth / 2),
-                center_Y + (button_radius + outside_add_size - strokeWidth / 2));
+                center_X - (mRadius + mOutAddSize - mStrokeWidth / 2),
+                center_Y - (mRadius + mOutAddSize - mStrokeWidth / 2),
+                center_X + (mRadius + mOutAddSize - mStrokeWidth / 2),
+                center_Y + (mRadius + mOutAddSize - mStrokeWidth / 2));
 
         timer = new RecordCountDownTimer(duration, duration / 360);    //录制定时器
     }
@@ -122,7 +131,7 @@ public class CaptureButton extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(button_size + outside_add_size * 2, button_size + outside_add_size * 2);
+        setMeasuredDimension(mSize + mOutAddSize * 2, mSize + mOutAddSize * 2);
     }
 
     @Override
@@ -131,16 +140,16 @@ public class CaptureButton extends View {
         mPaint.setStyle(Paint.Style.FILL);
 
         mPaint.setColor(outside_color); //外圆（半透明灰色）
-        canvas.drawCircle(center_X, center_Y, button_outside_radius, mPaint);
+        canvas.drawCircle(center_X, center_Y, mOutRadius, mPaint);
 
         mPaint.setColor(inside_color);  //内圆（白色）
-        canvas.drawCircle(center_X, center_Y, button_inside_radius, mPaint);
+        canvas.drawCircle(center_X, center_Y, mInRadius, mPaint);
 
         //如果状态为录制状态，则绘制录制进度条
         if (state == STATE_RECORDERING) {
             mPaint.setColor(progress_color);
             mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(strokeWidth);
+            mPaint.setStrokeWidth(mStrokeWidth);
             canvas.drawArc(rectF, -90, progress, false, mPaint);
         }
     }
@@ -175,8 +184,8 @@ public class CaptureButton extends View {
                 handlerUnpressByState();
                 break;
 
-             default:
-                 break;
+            default:
+                break;
 
         }
         return true;
@@ -191,7 +200,7 @@ public class CaptureButton extends View {
             case STATE_PRESS:
                 if (captureLisenter != null && (button_state == BUTTON_STATE_ONLY_CAPTURE || button_state ==
                         BUTTON_STATE_BOTH)) {
-                    startCaptureAnimation(button_inside_radius);
+                    startCaptureAnimation(mInRadius);
                 } else {
                     state = STATE_IDLE;
                 }
@@ -222,10 +231,10 @@ public class CaptureButton extends View {
         invalidate();
         //还原按钮初始状态动画
         startRecordAnimation(
-                button_outside_radius,
-                button_radius,
-                button_inside_radius,
-                button_radius * 0.75f
+                mOutRadius,
+                mRadius,
+                mInRadius,
+                mRadius * 0.75f
         );
     }
 
@@ -235,7 +244,7 @@ public class CaptureButton extends View {
         inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                button_inside_radius = (float) animation.getAnimatedValue();
+                mInRadius = (float) animation.getAnimatedValue();
                 invalidate();
             }
         });
@@ -260,7 +269,7 @@ public class CaptureButton extends View {
         outside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                button_outside_radius = (float) animation.getAnimatedValue();
+                mOutRadius = (float) animation.getAnimatedValue();
                 invalidate();
             }
         });
@@ -268,7 +277,7 @@ public class CaptureButton extends View {
         inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                button_inside_radius = (float) animation.getAnimatedValue();
+                mInRadius = (float) animation.getAnimatedValue();
                 invalidate();
             }
         });
@@ -333,10 +342,10 @@ public class CaptureButton extends View {
             }
             //启动按钮动画，外圆变大，内圆缩小
             startRecordAnimation(
-                    button_outside_radius,
-                    button_outside_radius + outside_add_size,
-                    button_inside_radius,
-                    button_inside_radius - inside_reduce_size
+                    mOutRadius,
+                    mOutRadius + mOutAddSize,
+                    mInRadius,
+                    mInRadius - mInReduceSize
             );
         }
     }

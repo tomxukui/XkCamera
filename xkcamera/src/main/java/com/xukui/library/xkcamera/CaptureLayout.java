@@ -104,8 +104,7 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void recordShort(long time) {
-                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f)
-                        .setDuration(2500);
+                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f).setDuration(2000);
                 animator.addListener(new Animator.AnimatorListener() {
 
                     @Override
@@ -203,7 +202,7 @@ public class CaptureLayout extends FrameLayout {
 
     public void setCaptureEndView() {
         iv_back.setVisibility(GONE);
-        btn_capture.setVisibility(GONE);
+        btn_capture.setVisibility(INVISIBLE);
         iv_cancel.setVisibility(VISIBLE);
         iv_confirm.setVisibility(VISIBLE);
 

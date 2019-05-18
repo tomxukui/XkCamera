@@ -2,7 +2,11 @@
 <resources>
 
     <declare-styleable name="JCameraView">
-        <attr name="max_duration" format="integer"/>
+        <attr name="max_duration" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="CaptureButton">
+        <attr name="size" format="dimension" />
     </declare-styleable>
 
 </resources>
