@@ -64,7 +64,6 @@ public class CaptureButton extends View {
         super(context);
         mSize = buttonSize;
         initData(context, null, 0);
-        initView();
     }
 
     public CaptureButton(Context context, @Nullable AttributeSet attrs) {
@@ -74,7 +73,6 @@ public class CaptureButton extends View {
     public CaptureButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initData(context, attrs, defStyleAttr);
-        initView();
     }
 
     private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -120,10 +118,6 @@ public class CaptureButton extends View {
         mTimer = new RecordCountDownTimer(mMaxDuration, mMaxDuration / 360);//定时器
     }
 
-    private void initView() {
-
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -133,12 +127,13 @@ public class CaptureButton extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        //外圆
         mPaint.setStyle(Paint.Style.FILL);
-
-        mPaint.setColor(mOutsideColor); //外圆（半透明灰色）
+        mPaint.setColor(mOutsideColor);
         canvas.drawCircle(mCenterX, mCenterY, mOutRadius, mPaint);
 
-        mPaint.setColor(mInsideColor);  //内圆（白色）
+        //内圆
+        mPaint.setColor(mInsideColor);
         canvas.drawCircle(mCenterX, mCenterY, mInRadius, mPaint);
 
         //如果状态为录制状态，则绘制录制进度条
@@ -149,7 +144,6 @@ public class CaptureButton extends View {
             canvas.drawArc(mRect, -90, mProgress, false, mPaint);
         }
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
