@@ -1,7 +1,5 @@
 package com.xukui.library.xkcamera;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -78,7 +76,6 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     private int angle = 0;
     private int cameraAngle = 90;//摄像头角度   默认为90度
-    private int rotation = 0;
     private byte[] firstFrame_data;
 
     public static final int TYPE_RECORDER = 0x090;
@@ -100,9 +97,10 @@ public class CameraInterface implements Camera.PreviewCallback {
         return mCameraInterface;
     }
 
-    public void setSwitchView(ImageView mSwitchView, ImageView mFlashLamp) {
-        this.mSwitchView = mSwitchView;
-        this.mFlashLamp = mFlashLamp;
+    public void setSwitchView(ImageView switchView, ImageView flashLamp) {
+        this.mSwitchView = switchView;
+        this.mFlashLamp = flashLamp;
+
         if (mSwitchView != null) {
             cameraAngle = CameraParamUtil.getInstance().getCameraDisplayOrientation(mSwitchView.getContext(), SELECTED_CAMERA);
         }
@@ -117,91 +115,12 @@ public class CameraInterface implements Camera.PreviewCallback {
 
             float[] values = event.values;
             angle = AngleUtil.getSensorAngle(values[0], values[1]);
-            rotationAnimation();
         }
 
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
 
     };
-
-    /**
-     * 切换摄像头icon跟随手机角度进行旋转
-     */
-    private void rotationAnimation() {
-        if (mSwitchView == null || mFlashLamp == null) {
-            return;
-        }
-
-        if (rotation != angle) {
-            int start_rotaion = 0;
-            int end_rotation = 0;
-
-            switch (rotation) {
-
-                case 0: {
-                    start_rotaion = 0;
-
-                    if (angle == 90) {
-                        end_rotation = -90;
-
-                    } else if (angle == 270) {
-                        end_rotation = 90;
-                    }
-                }
-                break;
-
-                case 90: {
-                    start_rotaion = -90;
-
-                    if (angle == 0) {
-                        end_rotation = 0;
-
-                    } else if (angle == 180) {
-                        end_rotation = -180;
-                    }
-                }
-                break;
-
-                case 180: {
-                    start_rotaion = 180;
-
-                    if (angle == 90) {
-                        end_rotation = 270;
-
-                    } else if (angle == 270) {
-                        end_rotation = 90;
-                    }
-                }
-                break;
-
-                case 270: {
-                    start_rotaion = 90;
-
-                    if (angle == 0) {
-                        end_rotation = 0;
-
-                    } else if (angle == 180) {
-                        end_rotation = 180;
-                    }
-                }
-                break;
-
-                default:
-                    break;
-
-            }
-
-            ObjectAnimator anim1 = ObjectAnimator.ofFloat(mSwitchView, "rotation", start_rotaion, end_rotation);
-            ObjectAnimator anim2 = ObjectAnimator.ofFloat(mFlashLamp, "rotation", start_rotaion, end_rotation);
-            AnimatorSet set = new AnimatorSet();
-            set.playTogether(anim1, anim2);
-            set.setDuration(500);
-            set.start();
-
-            rotation = angle;
-        }
-    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void setSaveVideoPath(String saveVideoPath) {
