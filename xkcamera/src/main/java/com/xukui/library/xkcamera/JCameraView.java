@@ -193,7 +193,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
             @Override
             public void recordShort(final long time) {
-                layout_capture.showTipView("录制时间过短", true);
                 iv_switch.setVisibility(VISIBLE);
                 iv_flash.setVisibility(VISIBLE);
 

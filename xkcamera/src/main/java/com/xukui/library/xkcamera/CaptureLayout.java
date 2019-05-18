@@ -73,7 +73,7 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void onClick(View view) {
-                showTipView("轻触拍照, 长按摄像", false);
+                showTipView();
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onCancelClick();
@@ -87,7 +87,7 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void onClick(View view) {
-                showTipView("轻触拍照, 长按摄像", false);
+                showTipView();
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onConfirmClick();
@@ -110,7 +110,32 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void recordShort(long time) {
-                showTipView("轻触拍照, 长按摄像", false);
+                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f)
+                        .setDuration(2500);
+                animator.addListener(new Animator.AnimatorListener() {
+
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        tv_tip.setText("录制时间过短");
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        showTipView();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+
+                });
+                animator.start();
 
                 if (captureLisenter != null) {
                     captureLisenter.recordShort(time);
@@ -195,22 +220,15 @@ public class CaptureLayout extends FrameLayout {
         iv_back.setVisibility(VISIBLE);
     }
 
-    public void showTipView(String tip, boolean deep) {
-        tv_tip.setText(tip);
+    private void showTipView() {
+        tv_tip.setText("轻触拍照, 长按摄像");
 
-        if (deep) {
-            ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f)
-                    .setDuration(2500)
-                    .start();
-
-        } else {
-            ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f)
-                    .setDuration(500)
-                    .start();
-        }
+        ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f)
+                .setDuration(500)
+                .start();
     }
 
-    public void hideTipView() {
+    private void hideTipView() {
         if (tv_tip.getAlpha() > 0) {
             ObjectAnimator.ofFloat(tv_tip, "alpha", 1f, 0f)
                     .setDuration(500)
