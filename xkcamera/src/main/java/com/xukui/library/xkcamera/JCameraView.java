@@ -401,9 +401,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
             break;
 
-            case TYPE_SHORT:
-                break;
-
             case TYPE_DEFAULT: {
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             }
@@ -415,7 +412,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
         iv_switch.setVisibility(VISIBLE);
         iv_flash.setVisibility(VISIBLE);
-        layout_capture.resetCaptureLayout();
+        layout_capture.reset();
     }
 
     @Override
@@ -440,18 +437,12 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
             break;
 
-            case TYPE_SHORT:
-                break;
-
-            case TYPE_DEFAULT:
-                break;
-
             default:
                 break;
 
         }
 
-        layout_capture.resetCaptureLayout();
+        layout_capture.reset();
     }
 
     @Override
@@ -466,8 +457,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         captureBitmap = bitmap;
         iv_photo.setImageBitmap(bitmap);
         iv_photo.setVisibility(VISIBLE);
-//        layout_capture.startAlphaAnimation();
-        layout_capture.startTypeBtnAnimator();
+        layout_capture.setCaptureEndView();
     }
 
     @Override

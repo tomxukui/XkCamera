@@ -145,7 +145,7 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void recordEnd(long time) {
-                startTypeBtnAnimator();
+                setCaptureEndView();
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onRecordEnd(time);
@@ -169,7 +169,39 @@ public class CaptureLayout extends FrameLayout {
         });
     }
 
-    public void startTypeBtnAnimator() {
+    private void setCaptureStartView() {
+        ObjectAnimator animator_cancel = ObjectAnimator.ofFloat(iv_cancel, "translationX", -getWidth() / 4, 0);
+        ObjectAnimator animator_confirm = ObjectAnimator.ofFloat(iv_confirm, "translationX", getWidth() / 4, 0);
+
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animator_cancel, animator_confirm);
+        set.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                iv_cancel.setClickable(false);
+                iv_confirm.setClickable(false);
+
+                iv_cancel.setVisibility(VISIBLE);
+                iv_confirm.setVisibility(VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                iv_cancel.setVisibility(GONE);
+                iv_confirm.setVisibility(GONE);
+                iv_back.setVisibility(VISIBLE);
+                btn_capture.setVisibility(VISIBLE);
+            }
+
+        });
+        set.setDuration(200);
+        set.start();
+    }
+
+    public void setCaptureEndView() {
         iv_back.setVisibility(GONE);
         btn_capture.setVisibility(GONE);
         iv_cancel.setVisibility(VISIBLE);
@@ -204,12 +236,18 @@ public class CaptureLayout extends FrameLayout {
     /**************************************************
      * 对外提供的API                      *
      **************************************************/
-    public void resetCaptureLayout() {
-        btn_capture.resetState();
-        iv_cancel.setVisibility(GONE);
-        iv_confirm.setVisibility(GONE);
-        btn_capture.setVisibility(VISIBLE);
-        iv_back.setVisibility(VISIBLE);
+    public void reset() {
+        if (btn_capture.getVisibility() == View.VISIBLE) {
+            btn_capture.resetState();
+            iv_cancel.setVisibility(GONE);
+            iv_confirm.setVisibility(GONE);
+            btn_capture.setVisibility(VISIBLE);
+            iv_back.setVisibility(VISIBLE);
+
+        } else {
+            btn_capture.resetState();
+            setCaptureStartView();
+        }
     }
 
     private void showTipView() {
