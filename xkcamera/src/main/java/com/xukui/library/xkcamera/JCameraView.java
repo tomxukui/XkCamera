@@ -62,7 +62,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private CaptureLayout layout_capture;
     private ImageView iv_foucs;
 
-    private CameraMachine mMachine;//Camera状态机
+    private CameraMachine mMachine;
     private MediaPlayer mMediaPlayer;
 
     private Context mContext;
