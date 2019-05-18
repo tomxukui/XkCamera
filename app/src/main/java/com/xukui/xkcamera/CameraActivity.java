@@ -11,12 +11,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.xukui.library.xkcamera.JCameraView;
-import com.xukui.library.xkcamera.listener.JCameraListener;
 
 import java.io.File;
 
@@ -39,16 +37,14 @@ public class CameraActivity extends AppCompatActivity {
         view_camera.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "JCamera");
 
         //JCameraView监听
-        view_camera.setJCameraLisenter(new JCameraListener() {
+        view_camera.setOnCameraListener(new JCameraView.OnCameraListener() {
 
             @Override
-            public void captureSuccess(Bitmap bitmap) {
-                //获取图片bitmap
-                Log.i("JCameraView", "bitmap = " + bitmap.getWidth());
+            public void onPhoto(Bitmap bitmap) {
             }
 
             @Override
-            public void recordSuccess(String url, Bitmap firstFrame) {
+            public void onVideo(String url, Bitmap firstFrame) {
             }
 
         });

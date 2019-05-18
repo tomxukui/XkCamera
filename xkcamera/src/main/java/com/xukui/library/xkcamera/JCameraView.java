@@ -20,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
-import com.xukui.library.xkcamera.listener.JCameraListener;
 import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
@@ -81,7 +80,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     //回调监听
     private OnErrorListener mOnErrorListener;
 
-    private JCameraListener jCameraLisenter;
+    private OnCameraListener mOnCameraListener;
 
     public JCameraView(Context context) {
         this(context, null);
@@ -364,10 +363,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     }
 
 
-    public void setJCameraLisenter(JCameraListener jCameraLisenter) {
-        this.jCameraLisenter = jCameraLisenter;
-    }
-
     /**
      * 启动Camera错误回调
      */
@@ -428,16 +423,18 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 stopVideo();    //停止播放
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMachine.start(v_preview.getHolder(), mScreenProp);
-                if (jCameraLisenter != null) {
-                    jCameraLisenter.recordSuccess(mVideoUrl, firstFrame);
+
+                if (mOnCameraListener != null) {
+                    mOnCameraListener.onVideo(mVideoUrl, firstFrame);
                 }
             }
             break;
 
             case TYPE_PICTURE: {
                 iv_photo.setVisibility(INVISIBLE);
-                if (jCameraLisenter != null) {
-                    jCameraLisenter.captureSuccess(captureBitmap);
+
+                if (mOnCameraListener != null) {
+                    mOnCameraListener.onPhoto(captureBitmap);
                 }
             }
             break;
@@ -582,6 +579,18 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 break;
 
         }
+    }
+
+    public void setOnCameraListener(OnCameraListener listener) {
+        mOnCameraListener = listener;
+    }
+
+    public interface OnCameraListener {
+
+        void onPhoto(Bitmap bitmap);
+
+        void onVideo(String url, Bitmap firstFrame);
+
     }
 
 }
