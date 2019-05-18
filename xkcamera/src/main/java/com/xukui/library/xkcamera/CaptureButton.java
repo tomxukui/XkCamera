@@ -316,7 +316,7 @@ public class CaptureButton extends View {
     //更新进度条
     private void updateProgress(long millisUntilFinished) {
         mRecordedTime = (int) (mMaxDuration - millisUntilFinished);
-        mProgress = 360f - millisUntilFinished / mMaxDuration * 360f;
+        mProgress = 360f - millisUntilFinished / (float) mMaxDuration * 360f;
         invalidate();
     }
 
