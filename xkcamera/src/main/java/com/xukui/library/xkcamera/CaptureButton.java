@@ -21,14 +21,14 @@ import static com.xukui.library.xkcamera.JCameraView.BUTTON_STATE_ONLY_RECORDER;
 
 public class CaptureButton extends View {
 
+    public static final int STATE_IDLE = 0x001;//空闲状态
+    public static final int STATE_PRESS = 0x002;//按下状态
+    public static final int STATE_LONG_PRESS = 0x003;//长按状态
+    public static final int STATE_RECORDERING = 0x004;//录制状态
+    public static final int STATE_BAN = 0x005;//禁止状态
+
     private int state;              //当前按钮状态
     private int button_state;       //按钮可执行的功能状态（拍照,录制,两者）
-
-    public static final int STATE_IDLE = 0x001;        //空闲状态
-    public static final int STATE_PRESS = 0x002;       //按下状态
-    public static final int STATE_LONG_PRESS = 0x003;  //长按状态
-    public static final int STATE_RECORDERING = 0x004; //录制状态
-    public static final int STATE_BAN = 0x005;         //禁止状态
 
     private int progress_color = 0xEE16AE16;            //进度条颜色
     private int outside_color = 0xEEDCDCDC;             //外圆背景色
@@ -132,6 +132,7 @@ public class CaptureButton extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
+
             case MotionEvent.ACTION_DOWN:
                 if (event.getPointerCount() > 1 || state != STATE_IDLE)
                     break;
@@ -142,6 +143,7 @@ public class CaptureButton extends View {
                 if ((button_state == BUTTON_STATE_ONLY_RECORDER || button_state == BUTTON_STATE_BOTH))
                     postDelayed(longPressRunnable, 500);    //同时延长500启动长按后处理的逻辑Runnable
                 break;
+
             case MotionEvent.ACTION_MOVE:
                 if (captureLisenter != null
                         && state == STATE_RECORDERING
@@ -150,10 +152,15 @@ public class CaptureButton extends View {
                     captureLisenter.recordZoom(event_Y - event.getY());
                 }
                 break;
+
             case MotionEvent.ACTION_UP:
                 //根据当前按钮的状态进行相应的处理
                 handlerUnpressByState();
                 break;
+
+             default:
+                 break;
+
         }
         return true;
     }

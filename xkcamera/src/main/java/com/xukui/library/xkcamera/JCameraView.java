@@ -24,7 +24,6 @@ import com.xukui.library.xkcamera.listener.CaptureListener;
 import com.xukui.library.xkcamera.listener.ClickListener;
 import com.xukui.library.xkcamera.listener.JCameraListener;
 import com.xukui.library.xkcamera.listener.OnErrorListener;
-import com.xukui.library.xkcamera.listener.TypeListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
 import com.xukui.library.xkcamera.view.CameraView;
@@ -115,7 +114,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     }
 
     private void initView(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.camera_view, this);
+        View view = LayoutInflater.from(context).inflate(R.layout.xkcamera_view_camera, this);
 
         v_preview = view.findViewById(R.id.v_preview);
         iv_photo = view.findViewById(R.id.iv_photo);
@@ -160,6 +159,26 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
         //拍照、录像
         layout_capture.setDuration(mMaxDuration);
+        layout_capture.setOnItemClickListener(new CaptureLayout.OnItemClickListener() {
+
+            @Override
+            public void onBackClick() {
+
+            }
+
+            @Override
+            public void onCancelClick() {
+                mMachine.cancle(v_preview.getHolder(), mScreenProp);
+            }
+
+            @Override
+            public void onConfirmClick() {
+                mMachine.confirm();
+            }
+
+        });
+
+
         layout_capture.setCaptureLisenter(new CaptureListener() {
 
             @Override
@@ -207,19 +226,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
                 if (mOnErrorListener != null) {
                     mOnErrorListener.onRecordError();
                 }
-            }
-
-        });
-        layout_capture.setTypeLisenter(new TypeListener() {
-
-            @Override
-            public void cancel() {
-                mMachine.cancle(v_preview.getHolder(), mScreenProp);
-            }
-
-            @Override
-            public void confirm() {
-                mMachine.confirm();
             }
 
         });
