@@ -1,4 +1,4 @@
-package com.xukui.library.xkcamera.view;
+package com.xukui.library.xkcamera;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

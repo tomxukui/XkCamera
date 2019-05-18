@@ -24,7 +24,6 @@ import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
 import com.xukui.library.xkcamera.view.CameraView;
-import com.xukui.library.xkcamera.view.StableImageView;
 
 import java.io.IOException;
 
