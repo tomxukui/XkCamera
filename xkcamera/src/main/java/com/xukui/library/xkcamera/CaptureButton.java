@@ -149,7 +149,7 @@ public class CaptureButton extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
 
-            case MotionEvent.ACTION_DOWN: {
+            case MotionEvent.ACTION_DOWN: {//按下
                 if (event.getPointerCount() == 1 && mState == STATE_IDLE) {
                     mEventY = event.getY();
                     mState = STATE_PRESS;
@@ -162,141 +162,182 @@ public class CaptureButton extends View {
             }
             break;
 
-            case MotionEvent.ACTION_MOVE: {
-                if (mOnCaptureListener != null && mState == STATE_RECORDERING && (mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
-                    //记录当前Y值与按下时候Y值的差值，调用缩放回调接口
-                    mOnCaptureListener.onRecordZoom(mEventY - event.getY());
+            case MotionEvent.ACTION_MOVE: {//移动
+                if (mState == STATE_RECORDERING && (mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
+                    if (mOnCaptureListener != null) {
+                        mOnCaptureListener.onRecordZoom(mEventY - event.getY());
+                    }
                 }
             }
             break;
 
             case MotionEvent.ACTION_UP:
-                //根据当前按钮的状态进行相应的处理
+            case MotionEvent.ACTION_CANCEL: {//抬起
                 handlerUnpressByState();
-                break;
+            }
+            break;
 
             default:
                 break;
 
         }
+
         return true;
     }
 
-    //当手指松开按钮时候处理的逻辑
+    /**
+     * 当手指松开按钮时候处理的逻辑
+     */
     private void handlerUnpressByState() {
-        removeCallbacks(mLongPressRunnable); //移除长按逻辑的Runnable
-        //根据当前状态处理
+        //移除长按逻辑的Runnable
+        removeCallbacks(mLongPressRunnable);
+
         switch (mState) {
-            //当前是点击按下
-            case STATE_PRESS:
-                if (mOnCaptureListener != null && (mActionState == BUTTON_STATE_ONLY_CAPTURE || mActionState ==
-                        BUTTON_STATE_BOTH)) {
-                    startCaptureAnimation(mInRadius);
+
+            case STATE_PRESS: {//当前是点击按下
+                if (mActionState == BUTTON_STATE_ONLY_CAPTURE || mActionState == BUTTON_STATE_BOTH) {
+                    startCaptureAnimation();
+
                 } else {
                     mState = STATE_IDLE;
                 }
+            }
+            break;
+
+            case STATE_RECORDERING: {//当前是长按状态
+                //停止计时器
+                mTimer.cancel();
+                //录制结束
+                recordEnd();
+            }
+            break;
+
+            default:
                 break;
-            //当前是长按状态
-            case STATE_RECORDERING:
-                mTimer.cancel(); //停止计时器
-                recordEnd();    //录制结束
-                break;
+
         }
     }
 
-    //录制结束
+    /**
+     * 录制结束
+     */
     private void recordEnd() {
         if (mOnCaptureListener != null) {
-            if (mRecordedTime < mMinDuration)
-                mOnCaptureListener.onRecordShort(mRecordedTime);//回调录制时间过短
-            else
-                mOnCaptureListener.onRecordEnd(mRecordedTime);  //回调录制结束
+            if (mRecordedTime < mMinDuration) {//回调录制时间过短
+                mOnCaptureListener.onRecordShort(mRecordedTime);
+
+            } else {//回调录制结束
+                mOnCaptureListener.onRecordEnd(mRecordedTime);
+            }
         }
-        resetRecordAnim();  //重制按钮状态
+
+        //重制按钮状态
+        resetRecord();
     }
 
-    //重制状态
-    private void resetRecordAnim() {
+    /**
+     * 重制状态
+     */
+    private void resetRecord() {
         mState = STATE_BAN;
-        mProgress = 0;//重制进度
+        mProgress = 0;
+
         invalidate();
+
         //还原按钮初始状态动画
-        startRecordAnimation(
-                mOutRadius,
-                mRadius,
-                mInRadius,
-                mRadius * 0.75f
-        );
+        startRecordAnimation(mOutRadius, mRadius, mInRadius, mRadius * 0.75f);
     }
 
-    //内圆动画
-    private void startCaptureAnimation(float inside_start) {
-        ValueAnimator inside_anim = ValueAnimator.ofFloat(inside_start, inside_start * 0.75f, inside_start);
-        inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    /**
+     * 内圆动画
+     */
+    private void startCaptureAnimation() {
+        ValueAnimator animator = ValueAnimator.ofFloat(mInRadius, mInRadius * 0.75f, mInRadius).setDuration(100);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mInRadius = (float) animation.getAnimatedValue();
+
                 invalidate();
             }
+
         });
-        inside_anim.addListener(new AnimatorListenerAdapter() {
+        animator.addListener(new AnimatorListenerAdapter() {
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                //回调拍照接口
-                mOnCaptureListener.onTakePicture();
                 mState = STATE_BAN;
+
+                if (mOnCaptureListener != null) {
+                    mOnCaptureListener.onTakePicture();
+                }
             }
+
         });
-        inside_anim.setDuration(100);
-        inside_anim.start();
+        animator.start();
     }
 
-    //内外圆动画
+    /**
+     * 内外圆动画
+     */
     private void startRecordAnimation(float outside_start, float outside_end, float inside_start, float inside_end) {
         ValueAnimator outside_anim = ValueAnimator.ofFloat(outside_start, outside_end);
         ValueAnimator inside_anim = ValueAnimator.ofFloat(inside_start, inside_end);
+
         //外圆动画监听
         outside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mOutRadius = (float) animation.getAnimatedValue();
                 invalidate();
             }
+
         });
+
         //内圆动画监听
         inside_anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mInRadius = (float) animation.getAnimatedValue();
                 invalidate();
             }
+
         });
+
         AnimatorSet set = new AnimatorSet();
-        //当动画结束后启动录像Runnable并且回调录像开始接口
+        set.playTogether(outside_anim, inside_anim);
+        set.setDuration(100);
         set.addListener(new AnimatorListenerAdapter() {
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 //设置为录制状态
                 if (mState == STATE_LONG_PRESS) {
-                    if (mOnCaptureListener != null)
-                        mOnCaptureListener.onRecordStart();
                     mState = STATE_RECORDERING;
                     mTimer.start();
+
+                    if (mOnCaptureListener != null) {
+                        mOnCaptureListener.onRecordStart();
+                    }
                 }
             }
+
         });
-        set.playTogether(outside_anim, inside_anim);
-        set.setDuration(100);
         set.start();
     }
 
-
-    //更新进度条
+    /**
+     * 更新进度条
+     */
     private void updateProgress(long millisUntilFinished) {
         mRecordedTime = (int) (mMaxDuration - millisUntilFinished);
         mProgress = 360f - millisUntilFinished / (float) mMaxDuration * 360f;
+
         invalidate();
     }
 
@@ -322,16 +363,19 @@ public class CaptureButton extends View {
 
     }
 
-    //长按线程
+    /**
+     * 长按线程
+     */
     private class LongPressRunnable implements Runnable {
 
         @Override
         public void run() {
-            mState = STATE_LONG_PRESS;   //如果按下后经过500毫秒则会修改当前状态为长按状态
+            mState = STATE_LONG_PRESS;//如果按下后经过500毫秒则会修改当前状态为长按状态
 
             //没有录制权限
             if (CheckPermission.getRecordState() != CheckPermission.STATE_SUCCESS) {
                 mState = STATE_IDLE;
+
                 if (mOnCaptureListener != null) {
                     mOnCaptureListener.onRecordError();
                     return;
@@ -339,42 +383,43 @@ public class CaptureButton extends View {
             }
 
             //启动按钮动画，外圆变大，内圆缩小
-            startRecordAnimation(
-                    mOutRadius,
-                    mOutRadius + mOutAddSize,
-                    mInRadius,
-                    mInRadius - mInReduceSize
-            );
+            startRecordAnimation(mOutRadius, mOutRadius + mOutAddSize, mInRadius, mInRadius - mInReduceSize);
         }
 
     }
 
-    /**************************************************
-     * 对外提供的API                     *
-     **************************************************/
-
-    //设置最长录制时间
+    /**
+     * 设置最长录制时间
+     */
     public void setMaxDuration(int duration) {
         mMaxDuration = duration;
         mTimer = new RecordCountDownTimer(duration, duration / 360);
     }
 
-    //设置最短录制时间
+    /**
+     * 设置最短录制时间
+     */
     public void setMinDuration(int duration) {
         mMinDuration = duration;
     }
 
-    //设置按钮功能（拍照和录像）
+    /**
+     * 设置按钮功能（拍照和录像）
+     */
     public void setButtonFeatures(int state) {
         this.mActionState = state;
     }
 
-    //是否空闲状态
+    /**
+     * 是否空闲状态
+     */
     public boolean isIdle() {
         return mState == STATE_IDLE ? true : false;
     }
 
-    //设置状态
+    /**
+     * 设置状态
+     */
     public void resetState() {
         mState = STATE_IDLE;
     }
