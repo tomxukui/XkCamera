@@ -12,8 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xukui.library.xkcamera.listener.CaptureListener;
-
 public class CaptureLayout extends FrameLayout {
 
     private TextView tv_tip;
@@ -91,10 +89,10 @@ public class CaptureLayout extends FrameLayout {
         });
 
         //拍照按钮
-        btn_capture.setCaptureLisenter(new CaptureListener() {
+        btn_capture.setOnCaptureListener(new CaptureButton.OnCaptureListener() {
 
             @Override
-            public void takePictures() {
+            public void onTakePicture() {
                 hideTipView();
 
                 if (mOnItemClickListener != null) {
@@ -103,7 +101,7 @@ public class CaptureLayout extends FrameLayout {
             }
 
             @Override
-            public void recordShort(long time) {
+            public void onRecordShort(long time) {
                 ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f).setDuration(2000);
                 animator.addListener(new Animator.AnimatorListener() {
 
@@ -134,7 +132,7 @@ public class CaptureLayout extends FrameLayout {
             }
 
             @Override
-            public void recordStart() {
+            public void onRecordStart() {
                 hideTipView();
 
                 if (mOnItemClickListener != null) {
@@ -143,7 +141,7 @@ public class CaptureLayout extends FrameLayout {
             }
 
             @Override
-            public void recordEnd(long time) {
+            public void onRecordEnd(long time) {
                 setCaptureEndView();
 
                 if (mOnItemClickListener != null) {
@@ -152,14 +150,14 @@ public class CaptureLayout extends FrameLayout {
             }
 
             @Override
-            public void recordZoom(float zoom) {
+            public void onRecordZoom(float zoom) {
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onRecordZoom(zoom);
                 }
             }
 
             @Override
-            public void recordError() {
+            public void onRecordError() {
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onRecordError();
                 }
