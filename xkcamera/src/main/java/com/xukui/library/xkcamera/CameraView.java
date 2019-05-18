@@ -161,7 +161,9 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
             @Override
             public void onBackClick() {
-
+                if (mOnCameraListener != null) {
+                    mOnCameraListener.onBack();
+                }
             }
 
             @Override
@@ -588,6 +590,8 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         void onPhoto(Bitmap bitmap);
 
         void onVideo(String url, Bitmap firstFrame);
+
+        void onBack();
 
     }
 

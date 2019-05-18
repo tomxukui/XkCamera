@@ -15,7 +15,7 @@ import android.widget.TextView;
 public class CaptureLayout extends FrameLayout {
 
     private TextView tv_tip;
-    private ImageView iv_back;
+    private StableImageView iv_back;
     private ImageView iv_cancel;
     private ImageView iv_confirm;
     private CaptureButton btn_capture;

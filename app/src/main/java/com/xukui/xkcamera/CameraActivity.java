@@ -47,6 +47,11 @@ public class CameraActivity extends AppCompatActivity {
             public void onVideo(String url, Bitmap firstFrame) {
             }
 
+            @Override
+            public void onBack() {
+                finish();
+            }
+
         });
 
         //6.0动态权限获取
