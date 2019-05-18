@@ -128,6 +128,9 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private void setView() {
         setWillNotDraw(false);
 
+        //预览
+        v_preview.getHolder().addCallback(this);
+
         //设置闪光灯
         setFlashView();
         iv_flash.setOnClickListener(new OnClickListener() {
@@ -154,9 +157,6 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
             }
 
         });
-
-        //预览
-        v_preview.getHolder().addCallback(this);
 
         //拍照、录像
         layout_capture.setDuration(mMaxDuration);
