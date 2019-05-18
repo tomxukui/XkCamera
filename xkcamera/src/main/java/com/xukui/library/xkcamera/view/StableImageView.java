@@ -181,8 +181,8 @@ public class StableImageView extends AppCompatImageView implements SensorEventLi
 
     @Override
     public void onClick(View view) {
-        ObjectAnimator anim1 = ObjectAnimator.ofFloat(this, "scaleX", 1.2f, 1f);
-        ObjectAnimator anim2 = ObjectAnimator.ofFloat(this, "scaleY", 1.2f, 1f);
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(this, "scaleX", 0.8f, 1.2f, 1f);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(this, "scaleY", 0.8f, 1.2f, 1f);
         ObjectAnimator anim3 = ObjectAnimator.ofFloat(this, "alpha", 0.6f, 1f);
 
         AnimatorSet set = new AnimatorSet();
