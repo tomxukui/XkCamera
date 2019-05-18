@@ -63,7 +63,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
     private StableImageView iv_flash;
     private StableImageView iv_switch;
     private CaptureLayout layout_capture;
-    private FoucsView v_foucs;
+    private ImageView iv_foucs;
 
     private CameraMachine mMachine;//Camera状态机
     private MediaPlayer mMediaPlayer;
@@ -122,7 +122,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         iv_flash = view.findViewById(R.id.iv_flash);
         iv_switch = view.findViewById(R.id.iv_switch);
         layout_capture = view.findViewById(R.id.layout_capture);
-        v_foucs = view.findViewById(R.id.v_foucs);
+        iv_foucs = view.findViewById(R.id.iv_foucs);
     }
 
     private void setView() {
@@ -371,7 +371,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
             @Override
             public void focusSuccess() {
-                v_foucs.setVisibility(INVISIBLE);
+                iv_foucs.setVisibility(INVISIBLE);
             }
 
         });
@@ -565,7 +565,7 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
 
     @Override
     public void startPreviewCallback() {
-        handlerFoucs(v_foucs.getWidth() / 2, v_foucs.getHeight() / 2);
+        handlerFoucs(iv_foucs.getWidth() / 2, iv_foucs.getHeight() / 2);
     }
 
     @Override
@@ -573,25 +573,31 @@ public class JCameraView extends FrameLayout implements CameraInterface.CameraOp
         if (y > layout_capture.getTop()) {
             return false;
         }
-        v_foucs.setVisibility(VISIBLE);
-        if (x < v_foucs.getWidth() / 2) {
-            x = v_foucs.getWidth() / 2;
+
+        int halfWidth = iv_foucs.getWidth() / 2;
+        int halfHeight = iv_foucs.getHeight() / 2;
+
+        int len = getWidth() - halfWidth;
+        if (x < halfWidth) {
+            x = halfWidth;
         }
-        int len = getWidth() - (v_foucs.getWidth() / 2);
         if (x > len) {
             x = len;
         }
-        if (y < v_foucs.getWidth() / 2) {
-            y = v_foucs.getWidth() / 2;
+        if (y < halfWidth) {
+            y = halfWidth;
         }
-        if (y > layout_capture.getTop() - v_foucs.getWidth() / 2) {
-            y = layout_capture.getTop() - v_foucs.getWidth() / 2;
+        if (y > layout_capture.getTop() - halfWidth) {
+            y = layout_capture.getTop() - halfWidth;
         }
-        v_foucs.setX(x - v_foucs.getWidth() / 2);
-        v_foucs.setY(y - v_foucs.getHeight() / 2);
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(v_foucs, "scaleX", 1, 0.6f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(v_foucs, "scaleY", 1, 0.6f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(v_foucs, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
+
+        iv_foucs.setVisibility(VISIBLE);
+        iv_foucs.setX(x - halfWidth);
+        iv_foucs.setY(y - halfHeight);
+
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(iv_foucs, "scaleX", 1, 0.6f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(iv_foucs, "scaleY", 1, 0.6f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(iv_foucs, "alpha", 1f, 0.4f, 1f, 0.4f, 1f, 0.4f, 1f);
         AnimatorSet animSet = new AnimatorSet();
         animSet.play(scaleX).with(scaleY).before(alpha);
         animSet.setDuration(400);

@@ -66,21 +66,24 @@ public class CaptureLayout extends FrameLayout {
 
     public CaptureLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            layout_width = outMetrics.widthPixels;
-        } else {
-            layout_width = outMetrics.widthPixels / 2;
-        }
-        button_size = (int) (layout_width / 4.5f);
-        layout_height = button_size + (button_size / 5) * 2 + 100;
-
+        initData(context);
         initView();
         initEvent();
+    }
+
+    private void initData(Context context) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layout_width = metrics.widthPixels;
+
+        } else {
+            layout_width = metrics.widthPixels / 2;
+        }
+
+        button_size = (int) (layout_width / 4.5f);
+        layout_height = button_size + (button_size / 5) * 2 + 100;
     }
 
     @Override
