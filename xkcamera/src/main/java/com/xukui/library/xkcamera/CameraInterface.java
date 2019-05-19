@@ -39,7 +39,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     private volatile static CameraInterface mCameraInterface;
 
     private Camera mCamera;
-    private boolean isPreviewing = false;
+    private boolean mIsPreviewing = false;
 
     private int SELECTED_CAMERA = -1;
     private int CAMERA_POST_POSITION = -1;
@@ -260,7 +260,7 @@ public class CameraInterface implements Camera.PreviewCallback {
      * doStartPreview
      */
     public void doStartPreview(SurfaceHolder holder, float screenProp) {
-        if (isPreviewing) {
+        if (mIsPreviewing) {
             return;
         }
 
@@ -300,7 +300,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                 mCamera.setDisplayOrientation(cameraAngle);//浏览角度
                 mCamera.setPreviewCallback(this); //每一帧回调
                 mCamera.startPreview();//启动浏览
-                isPreviewing = true;
+                mIsPreviewing = true;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -318,7 +318,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                 mCamera.stopPreview();
                 //这句要在stopPreview后执行，不然会卡顿或者花屏
                 mCamera.setPreviewDisplay(null);
-                isPreviewing = false;
+                mIsPreviewing = false;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -338,7 +338,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                 mCamera.stopPreview();
                 //这句要在stopPreview后执行，不然会卡顿或者花屏
                 mCamera.setPreviewDisplay(null);
-                isPreviewing = false;
+                mIsPreviewing = false;
                 mCamera.release();
                 mCamera = null;
 
@@ -579,10 +579,10 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     private void findAvailableCameras() {
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        int cameraNum = Camera.getNumberOfCameras();
+        int count = Camera.getNumberOfCameras();
 
-        for (int i = 0; i < cameraNum; i++) {
+        for (int i = 0; i < count; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
             Camera.getCameraInfo(i, info);
 
             switch (info.facing) {
@@ -590,12 +590,12 @@ public class CameraInterface implements Camera.PreviewCallback {
                 case Camera.CameraInfo.CAMERA_FACING_FRONT: {
                     CAMERA_FRONT_POSITION = info.facing;
                 }
-                break;
+                return;
 
                 case Camera.CameraInfo.CAMERA_FACING_BACK: {
                     CAMERA_POST_POSITION = info.facing;
                 }
-                break;
+                return;
 
                 default:
                     break;
@@ -702,7 +702,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     void isPreview(boolean res) {
-        this.isPreviewing = res;
+        mIsPreviewing = res;
     }
 
     private SensorEventListener mSensorEventListener = new SensorEventListener() {
