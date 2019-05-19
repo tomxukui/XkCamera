@@ -70,8 +70,8 @@ public class CameraMachine implements State {
     }
 
     @Override
-    public void swtich(SurfaceHolder holder, float screenProp) {
-        state.swtich(holder, screenProp);
+    public void switchCamera(SurfaceHolder holder, float screenProp) {
+        state.switchCamera(holder, screenProp);
     }
 
     @Override

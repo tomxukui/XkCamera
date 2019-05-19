@@ -13,7 +13,7 @@ public interface State {
 
     void focus(float x, float y, CameraInterface.OnFocusListener listener);
 
-    void swtich(SurfaceHolder holder, float screenProp);
+    void switchCamera(SurfaceHolder holder, float screenProp);
 
     void restart();
 

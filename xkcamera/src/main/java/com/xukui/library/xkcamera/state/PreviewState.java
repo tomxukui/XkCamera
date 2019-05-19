@@ -33,7 +33,7 @@ class PreviewState implements State {
     }
 
     @Override
-    public void swtich(SurfaceHolder holder, float screenProp) {
+    public void switchCamera(SurfaceHolder holder, float screenProp) {
         CameraInterface.getInstance().switchCamera(holder, screenProp);
     }
 

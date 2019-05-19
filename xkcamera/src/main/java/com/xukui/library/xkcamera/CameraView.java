@@ -145,7 +145,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
             @Override
             public void onClick(View view, int angle) {
-                mMachine.swtich(v_preview.getHolder(), mScreenProp);
+                mMachine.switchCamera(v_preview.getHolder(), mScreenProp);
             }
 
         });

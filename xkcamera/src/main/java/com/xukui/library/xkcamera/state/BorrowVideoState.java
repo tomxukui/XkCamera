@@ -29,7 +29,7 @@ public class BorrowVideoState implements State {
     }
 
     @Override
-    public void swtich(SurfaceHolder holder, float screenProp) {
+    public void switchCamera(SurfaceHolder holder, float screenProp) {
     }
 
     @Override
