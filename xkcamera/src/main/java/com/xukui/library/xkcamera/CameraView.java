@@ -4,7 +4,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -71,10 +70,10 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
     private float mFirstTouchLength;
-    private String mVideoUrl;//视频URL
 
     private byte[] mPhotoBytes;//照片
-    private Bitmap firstFrame;//第一帧图片
+    private String mVideoPath;//视频文件地址
+    private byte[] mVideoCoverBytes;//视频的第一帧图片
 
     private OnCameraListener mOnCameraListener;
 
@@ -394,7 +393,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
                 stopVideo();//停止播放
 
                 //初始化VideoView
-                FileUtil.deleteFile(mVideoUrl);
+                FileUtil.deleteFile(mVideoPath);
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMachine.start(v_preview.getHolder(), mScreenProp);
             }
@@ -424,12 +423,13 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         switch (type) {
 
             case TYPE_VIDEO: {
-                stopVideo();    //停止播放
+                stopVideo();
+
                 v_preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMachine.start(v_preview.getHolder(), mScreenProp);
 
                 if (mOnCameraListener != null) {
-                    mOnCameraListener.onVideo(mVideoUrl, firstFrame);
+                    mOnCameraListener.onVideo(mVideoPath, mVideoCoverBytes);
                 }
             }
             break;
@@ -463,11 +463,12 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     }
 
     @Override
-    public void playVideo(Bitmap firstFrame, final String url) {
-        mVideoUrl = url;
-        CameraView.this.firstFrame = firstFrame;
+    public void playVideo(final String filePath, byte[] coverBytes) {
+        mVideoPath = filePath;
+        mVideoCoverBytes = coverBytes;
 
         new Thread(new Runnable() {
+
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
@@ -477,31 +478,36 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
                     } else {
                         mMediaPlayer.reset();
                     }
-                    mMediaPlayer.setDataSource(url);
+
+                    mMediaPlayer.setDataSource(filePath);
                     mMediaPlayer.setSurface(v_preview.getHolder().getSurface());
                     mMediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
                     mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer
-                            .OnVideoSizeChangedListener() {
+                    mMediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+
                         @Override
                         public void
                         onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                            updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer
-                                    .getVideoHeight());
+                            updateVideoViewSize(mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
                         }
+
                     });
                     mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
                         @Override
                         public void onPrepared(MediaPlayer mp) {
                             mMediaPlayer.start();
                         }
+
                     });
                     mMediaPlayer.setLooping(true);
                     mMediaPlayer.prepare();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+
         }).start();
     }
 
@@ -590,7 +596,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
         void onPhoto(byte[] bytes);
 
-        void onVideo(String url, Bitmap firstFrame);
+        void onVideo(String filePath, byte[] coverBytes);
 
         void onBack();
 

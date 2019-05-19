@@ -48,7 +48,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     private MediaRecorder mMediaRecorder;
     private String mVideoDirectory;
     private String mVideoFileName;
-    private Bitmap videoFirstFrame;
+    private byte[] mVideoCoverBytes;
 
     private OnErrorListener mOnErrorListener;
 
@@ -434,12 +434,13 @@ public class CameraInterface implements Camera.PreviewCallback {
         Camera.Parameters parameters = mCamera.getParameters();
         int width = parameters.getPreviewSize().width;
         int height = parameters.getPreviewSize().height;
+
         YuvImage yuv = new YuvImage(firstFrame_data, parameters.getPreviewFormat(), width, height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
         byte[] bytes = out.toByteArray();
-        videoFirstFrame = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         Matrix matrix = new Matrix();
         if (mSelectedCamera == CAMERA_BACK_POSITION) {
             matrix.setRotate(nowAngle);
@@ -447,8 +448,12 @@ public class CameraInterface implements Camera.PreviewCallback {
         } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
             matrix.setRotate(270);
         }
-
-        videoFirstFrame = createBitmap(videoFirstFrame, 0, 0, videoFirstFrame.getWidth(), videoFirstFrame.getHeight(), matrix, true);
+        bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        mVideoCoverBytes = ImageUtil.bitmap2Bytes(bitmap, Bitmap.CompressFormat.JPEG, 100);
+        if (!bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
+        bitmap = null;
 
         if (mIsRecorder) {
             return;
@@ -602,7 +607,7 @@ public class CameraInterface implements Camera.PreviewCallback {
             doStopPreview();
 
             if (listener != null) {
-                listener.onResult(filePath, videoFirstFrame);
+                listener.onResult(filePath, mVideoCoverBytes);
             }
         }
     }
@@ -758,7 +763,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         void onShort();
 
-        void onResult(String url, Bitmap firstFrame);
+        void onResult(String filePath, byte[] coverBytes);
 
     }
 

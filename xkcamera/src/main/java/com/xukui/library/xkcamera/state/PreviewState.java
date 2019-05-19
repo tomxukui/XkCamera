@@ -1,6 +1,5 @@
 package com.xukui.library.xkcamera.state;
 
-import android.graphics.Bitmap;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -69,8 +68,8 @@ class PreviewState implements State {
             }
 
             @Override
-            public void onResult(String url, Bitmap firstFrame) {
-                mMachine.getView().playVideo(firstFrame, url);
+            public void onResult(String filePath, byte[] coverBytes) {
+                mMachine.getView().playVideo(filePath, coverBytes);
                 mMachine.setState(mMachine.getBorrowVideoState());
             }
 

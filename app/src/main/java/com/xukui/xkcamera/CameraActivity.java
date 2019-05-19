@@ -3,7 +3,6 @@ package com.xukui.xkcamera;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -45,7 +44,8 @@ public class CameraActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onVideo(String url, Bitmap firstFrame) {
+            public void onVideo(String filePath, byte[] coverBytes) {
+
             }
 
             @Override

@@ -1,7 +1,5 @@
 package com.xukui.library.xkcamera;
 
-import android.graphics.Bitmap;
-
 public interface ICameraView {
 
     void resetState(int type);
@@ -10,7 +8,7 @@ public interface ICameraView {
 
     void showPhoto(byte[] bytes, boolean isVertical);
 
-    void playVideo(Bitmap firstFrame, String url);
+    void playVideo(String filePath, byte[] coverBytes);
 
     void stopVideo();
 
