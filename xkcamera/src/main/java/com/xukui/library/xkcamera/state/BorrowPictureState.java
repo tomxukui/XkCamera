@@ -27,7 +27,7 @@ public class BorrowPictureState implements State {
 
 
     @Override
-    public void foucs(float x, float y, CameraInterface.FocusCallback callback) {
+    public void foucs(float x, float y, CameraInterface.OnFocusListener listener) {
     }
 
     @Override

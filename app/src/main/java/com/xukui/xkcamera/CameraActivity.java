@@ -52,6 +52,16 @@ public class CameraActivity extends AppCompatActivity {
                 finish();
             }
 
+            @Override
+            public void onError() {
+
+            }
+
+            @Override
+            public void onRecordError() {
+
+            }
+
         });
 
         //6.0动态权限获取

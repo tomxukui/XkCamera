@@ -20,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
-import com.xukui.library.xkcamera.listener.OnErrorListener;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
 
@@ -74,9 +73,6 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
     private Bitmap captureBitmap;//捕获的图片
     private Bitmap firstFrame;//第一帧图片
-
-    //回调监听
-    private OnErrorListener mOnErrorListener;
 
     private OnCameraListener mOnCameraListener;
 
@@ -212,14 +208,25 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
             @Override
             public void onRecordError() {
-                if (mOnErrorListener != null) {
-                    mOnErrorListener.onRecordError();
+                if (mOnCameraListener != null) {
+                    mOnCameraListener.onRecordError();
                 }
             }
 
             @Override
             public void onRecordZoom(float zoom) {
                 mMachine.zoom(zoom, CameraInterface.TYPE_RECORDER);
+            }
+
+        });
+
+        CameraInterface.getInstance().setOnErrorListener(new CameraInterface.OnErrorListener() {
+
+            @Override
+            public void onError() {
+                if (mOnCameraListener != null) {
+                    mOnCameraListener.onError();
+                }
             }
 
         });
@@ -335,10 +342,15 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
      * 对焦框指示器动画
      */
     private void setFocusViewWidthAnimation(float x, float y) {
-        mMachine.foucs(x, y, new CameraInterface.FocusCallback() {
+        mMachine.foucs(x, y, new CameraInterface.OnFocusListener() {
 
             @Override
-            public void focusSuccess() {
+            public void onSuccess() {
+                iv_foucs.setVisibility(INVISIBLE);
+            }
+
+            @Override
+            public void onFailure() {
                 iv_foucs.setVisibility(INVISIBLE);
             }
 
@@ -360,16 +372,6 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
     public void setSaveVideoPath(String path) {
         CameraInterface.getInstance().setSaveVideoPath(path);
-    }
-
-
-    /**
-     * 启动Camera错误回调
-     */
-    public void setOnErrorListener(OnErrorListener listener) {
-        mOnErrorListener = listener;
-
-        CameraInterface.getInstance().setOnErrorListener(listener);
     }
 
     //设置CaptureButton功能（拍照和录像）
@@ -593,6 +595,10 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         void onVideo(String url, Bitmap firstFrame);
 
         void onBack();
+
+        void onError();
+
+        void onRecordError();
 
     }
 

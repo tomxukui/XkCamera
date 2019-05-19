@@ -27,9 +27,9 @@ class PreviewState implements State {
 
 
     @Override
-    public void foucs(float x, float y, CameraInterface.FocusCallback callback) {
+    public void foucs(float x, float y, CameraInterface.OnFocusListener listener) {
         if (machine.getView().handlerFoucs(x, y)) {
-            CameraInterface.getInstance().handleFocus(machine.getContext(), x, y, callback);
+            CameraInterface.getInstance().handleFocus(machine.getContext(), x, y, listener);
         }
     }
 
@@ -45,18 +45,20 @@ class PreviewState implements State {
 
     @Override
     public void capture() {
-        CameraInterface.getInstance().takePicture(new CameraInterface.TakePictureCallback() {
+        CameraInterface.getInstance().takePicture(new CameraInterface.OnTakePictureListener() {
+
             @Override
-            public void captureResult(Bitmap bitmap, boolean isVertical) {
+            public void onResult(Bitmap bitmap, boolean isVertical) {
                 machine.getView().showPicture(bitmap, isVertical);
                 machine.setState(machine.getBorrowPictureState());
             }
+
         });
     }
 
     @Override
     public void record(Surface surface, float screenProp) {
-        CameraInterface.getInstance().startRecord(surface, screenProp, null);
+        CameraInterface.getInstance().startRecord(surface, screenProp);
     }
 
     @Override

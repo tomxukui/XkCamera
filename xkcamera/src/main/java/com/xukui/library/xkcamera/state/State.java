@@ -11,7 +11,7 @@ public interface State {
 
     void stop();
 
-    void foucs(float x, float y, CameraInterface.FocusCallback callback);
+    void foucs(float x, float y, CameraInterface.OnFocusListener listener);
 
     void swtich(SurfaceHolder holder, float screenProp);
 
