@@ -14,6 +14,6 @@ public interface ICameraView {
 
     void stopVideo();
 
-    boolean handlerFoucs(float x, float y);
+    boolean handlerFocus(float x, float y);
 
 }

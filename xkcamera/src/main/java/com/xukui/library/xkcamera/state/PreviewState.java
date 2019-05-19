@@ -27,8 +27,8 @@ class PreviewState implements State {
 
 
     @Override
-    public void foucs(float x, float y, CameraInterface.OnFocusListener listener) {
-        if (machine.getView().handlerFoucs(x, y)) {
+    public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
+        if (machine.getView().handlerFocus(x, y)) {
             CameraInterface.getInstance().handleFocus(machine.getContext(), x, y, listener);
         }
     }
@@ -40,7 +40,6 @@ class PreviewState implements State {
 
     @Override
     public void restart() {
-
     }
 
     @Override

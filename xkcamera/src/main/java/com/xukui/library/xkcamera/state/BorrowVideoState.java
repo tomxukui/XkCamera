@@ -22,36 +22,30 @@ public class BorrowVideoState implements State {
 
     @Override
     public void stop() {
-
     }
 
     @Override
-    public void foucs(float x, float y, CameraInterface.OnFocusListener listener) {
+    public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
     }
 
     @Override
     public void swtich(SurfaceHolder holder, float screenProp) {
-
     }
 
     @Override
     public void restart() {
-
     }
 
     @Override
     public void capture() {
-
     }
 
     @Override
     public void record(Surface surface, float screenProp) {
-
     }
 
     @Override
     public void stopRecord(boolean isShort, long time) {
-
     }
 
     @Override

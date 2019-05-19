@@ -65,8 +65,8 @@ public class CameraMachine implements State {
     }
 
     @Override
-    public void foucs(float x, float y, CameraInterface.OnFocusListener listener) {
-        state.foucs(x, y, listener);
+    public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
+        state.focus(x, y, listener);
     }
 
     @Override

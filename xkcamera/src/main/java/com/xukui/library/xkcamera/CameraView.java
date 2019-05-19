@@ -56,7 +56,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     private StableImageView iv_flash;
     private StableImageView iv_switch;
     private CaptureLayout layout_capture;
-    private ImageView iv_foucs;
+    private ImageView iv_focus;
 
     private CameraMachine mMachine;
     private MediaPlayer mMediaPlayer;
@@ -114,7 +114,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         iv_flash = view.findViewById(R.id.iv_flash);
         iv_switch = view.findViewById(R.id.iv_switch);
         layout_capture = view.findViewById(R.id.layout_capture);
-        iv_foucs = view.findViewById(R.id.iv_foucs);
+        iv_focus = view.findViewById(R.id.iv_focus);
     }
 
     private void setView() {
@@ -342,16 +342,16 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
      * 对焦框指示器动画
      */
     private void setFocusViewWidthAnimation(float x, float y) {
-        mMachine.foucs(x, y, new CameraInterface.OnFocusListener() {
+        mMachine.focus(x, y, new CameraInterface.OnFocusListener() {
 
             @Override
             public void onSuccess() {
-                iv_foucs.setVisibility(INVISIBLE);
+                iv_focus.setVisibility(INVISIBLE);
             }
 
             @Override
             public void onFailure() {
-                iv_foucs.setVisibility(INVISIBLE);
+                iv_focus.setVisibility(INVISIBLE);
             }
 
         });
@@ -517,13 +517,13 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     }
 
     @Override
-    public boolean handlerFoucs(float x, float y) {
+    public boolean handlerFocus(float x, float y) {
         if (y > layout_capture.getTop()) {
             return false;
         }
 
-        int halfWidth = iv_foucs.getWidth() / 2;
-        int halfHeight = iv_foucs.getHeight() / 2;
+        int halfWidth = iv_focus.getWidth() / 2;
+        int halfHeight = iv_focus.getHeight() / 2;
 
         int len = getWidth() - halfWidth;
         if (x < halfWidth) {
@@ -539,14 +539,14 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
             y = layout_capture.getTop() - halfWidth;
         }
 
-        iv_foucs.setVisibility(VISIBLE);
-        iv_foucs.setX(x - halfWidth);
-        iv_foucs.setY(y - halfHeight);
-        iv_foucs.clearAnimation();
+        iv_focus.setVisibility(VISIBLE);
+        iv_focus.setX(x - halfWidth);
+        iv_focus.setY(y - halfHeight);
+        iv_focus.clearAnimation();
 
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(iv_foucs, "scaleX", 1, 0.6f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(iv_foucs, "scaleY", 1, 0.6f);
-        ObjectAnimator alpha = ObjectAnimator.ofFloat(iv_foucs, "alpha", 1f, 0.2f, 1f, 0.2f, 1f, 0.2f, 1f);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(iv_focus, "scaleX", 1, 0.6f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(iv_focus, "scaleY", 1, 0.6f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(iv_focus, "alpha", 1f, 0.2f, 1f, 0.2f, 1f, 0.2f, 1f);
         AnimatorSet animSet = new AnimatorSet();
         animSet.play(scaleX).with(scaleY).before(alpha);
         animSet.setDuration(300);
