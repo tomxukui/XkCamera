@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -355,30 +356,21 @@ public class CameraInterface implements Camera.PreviewCallback {
     /**
      * 拍照
      */
-    private int nowAngle;
-
     public void takePicture(final OnTakePictureListener listener) {
         if (mCamera == null) {
             return;
         }
 
-        switch (cameraAngle) {
+        int nowAngle = 0;
 
-            case 90: {
-                nowAngle = Math.abs(angle + cameraAngle) % 360;
-            }
-            break;
+        if (cameraAngle == 90) {
+            nowAngle = Math.abs(angle + cameraAngle) % 360;
 
-            case 270: {
-                nowAngle = Math.abs(cameraAngle - angle);
-            }
-            break;
-
-            default:
-                break;
-
+        } else if (cameraAngle == 270) {
+            nowAngle = Math.abs(cameraAngle - angle);
         }
 
+        final int finalNowAngle = nowAngle;
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
 
             @Override
@@ -387,17 +379,17 @@ public class CameraInterface implements Camera.PreviewCallback {
                 Matrix matrix = new Matrix();
 
                 if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
-                    matrix.setRotate(nowAngle);
+                    matrix.setRotate(finalNowAngle);
 
                 } else if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
-                    matrix.setRotate(360 - nowAngle);
+                    matrix.setRotate(360 - finalNowAngle);
                     matrix.postScale(-1, 1);
                 }
 
                 bitmap = createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
                 if (listener != null) {
-                    boolean isVertical = (nowAngle == 90 || nowAngle == 270);
+                    boolean isVertical = (finalNowAngle == 90 || finalNowAngle == 270);
                     listener.onResult(bitmap, isVertical);
                 }
             }
