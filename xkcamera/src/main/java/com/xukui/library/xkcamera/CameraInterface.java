@@ -16,7 +16,7 @@ import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -25,7 +25,6 @@ import com.xukui.library.xkcamera.util.CameraParamUtil;
 import com.xukui.library.xkcamera.util.CheckPermission;
 import com.xukui.library.xkcamera.util.DeviceUtil;
 import com.xukui.library.xkcamera.util.FileUtil;
-import com.xukui.library.xkcamera.util.ScreenUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -376,8 +375,8 @@ public class CameraInterface implements Camera.PreviewCallback {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Matrix matrix = new Matrix();
 
+                Matrix matrix = new Matrix();
                 if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
                     matrix.setRotate(finalNowAngle);
 
@@ -396,10 +395,13 @@ public class CameraInterface implements Camera.PreviewCallback {
         });
     }
 
-    //启动录像
+    /**
+     * 开始录像
+     */
     public void startRecord(Surface surface, float screenProp) {
         mCamera.setPreviewCallback(null);
         final int nowAngle = (angle + 90) % 360;
+
         //获取第一帧图片
         Camera.Parameters parameters = mCamera.getParameters();
         int width = parameters.getPreviewSize().width;
@@ -409,12 +411,15 @@ public class CameraInterface implements Camera.PreviewCallback {
         yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
         byte[] bytes = out.toByteArray();
         videoFirstFrame = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
         Matrix matrix = new Matrix();
         if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
             matrix.setRotate(nowAngle);
+
         } else if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
             matrix.setRotate(270);
         }
+
         videoFirstFrame = createBitmap(videoFirstFrame, 0, 0, videoFirstFrame.getWidth(), videoFirstFrame.getHeight(), matrix, true);
 
         if (isRecorder) {
@@ -443,9 +448,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         mediaRecorder.reset();
         mediaRecorder.setCamera(mCamera);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -503,7 +506,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         mediaRecorder.setPreviewDisplay(surface);
 
         videoFileName = "video_" + System.currentTimeMillis() + ".mp4";
-        if (saveVideoPath.equals("")) {
+        if (TextUtils.isEmpty(saveVideoPath)) {
             saveVideoPath = Environment.getExternalStorageDirectory().getPath();
         }
         videoFileAbsPath = saveVideoPath + File.separator + videoFileName;
