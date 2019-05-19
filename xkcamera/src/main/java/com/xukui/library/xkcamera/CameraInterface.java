@@ -52,12 +52,12 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     private OnErrorListener mOnErrorListener;
 
-    private int preview_width;
-    private int preview_height;
+    private int mPreviewWidth;
+    private int mPreviewHeight;
 
-    private int angle = 0;
-    private int cameraAngle = 90;//摄像头角度   默认为90度
-    private byte[] firstFrame_data;
+    private int mAngle = 0;
+    private int mCameraAngle = 90;//摄像头角度
+    private byte[] mPreviewBytes;//预览帧图片
 
     public static final int TYPE_RECORDER = 0x090;
     public static final int TYPE_CAPTURE = 0x091;
@@ -130,7 +130,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     public void setCameraAngle(Context context) {
-        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
+        mCameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
     }
 
     public void setZoom(float zoom, int type) {
@@ -198,7 +198,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        firstFrame_data = data;
+        mPreviewBytes = data;
     }
 
     public void setFlashMode(String flashMode) {
@@ -305,8 +305,8 @@ public class CameraInterface implements Camera.PreviewCallback {
 
                 params.setPreviewSize(previewSize.width, previewSize.height);
 
-                preview_width = previewSize.width;
-                preview_height = previewSize.height;
+                mPreviewWidth = previewSize.width;
+                mPreviewHeight = previewSize.height;
 
                 params.setPictureSize(pictureSize.width, pictureSize.height);
 
@@ -320,8 +320,8 @@ public class CameraInterface implements Camera.PreviewCallback {
                 }
 
                 mCamera.setParameters(params);
-                mCamera.setPreviewDisplay(holder);  //SurfaceView
-                mCamera.setDisplayOrientation(cameraAngle);//浏览角度
+                mCamera.setPreviewDisplay(holder);
+                mCamera.setDisplayOrientation(mCameraAngle);//浏览角度
                 mCamera.setPreviewCallback(this); //每一帧回调
                 mCamera.startPreview();//启动浏览
                 mIsPreviewing = true;
@@ -382,11 +382,11 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         int nowAngle = 0;
 
-        if (cameraAngle == 90) {
-            nowAngle = Math.abs(angle + cameraAngle) % 360;
+        if (mCameraAngle == 90) {
+            nowAngle = Math.abs(mAngle + mCameraAngle) % 360;
 
-        } else if (cameraAngle == 270) {
-            nowAngle = Math.abs(cameraAngle - angle);
+        } else if (mCameraAngle == 270) {
+            nowAngle = Math.abs(mCameraAngle - mAngle);
         }
 
         final int finalNowAngle = nowAngle;
@@ -428,14 +428,14 @@ public class CameraInterface implements Camera.PreviewCallback {
      */
     public void startRecord(Surface surface, float screenProp) {
         mCamera.setPreviewCallback(null);
-        final int nowAngle = (angle + 90) % 360;
+        final int nowAngle = (mAngle + 90) % 360;
 
         //获取第一帧图片
         Camera.Parameters parameters = mCamera.getParameters();
         int width = parameters.getPreviewSize().width;
         int height = parameters.getPreviewSize().height;
 
-        YuvImage yuv = new YuvImage(firstFrame_data, parameters.getPreviewFormat(), width, height, null);
+        YuvImage yuv = new YuvImage(mPreviewBytes, parameters.getPreviewFormat(), width, height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
         byte[] bytes = out.toByteArray();
@@ -493,7 +493,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
 
         if (videoSize.width == videoSize.height) {
-            mMediaRecorder.setVideoSize(preview_width, preview_height);
+            mMediaRecorder.setVideoSize(mPreviewWidth, mPreviewHeight);
 
         } else {
             mMediaRecorder.setVideoSize(videoSize.width, videoSize.height);
@@ -501,7 +501,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         if (mSelectedCamera == CAMERA_FRONT_POSITION) {
             //手机预览倒立的处理
-            if (cameraAngle == 270) {
+            if (mCameraAngle == 270) {
                 //横屏
                 if (nowAngle == 0) {
                     mMediaRecorder.setOrientationHint(180);
@@ -721,7 +721,8 @@ public class CameraInterface implements Camera.PreviewCallback {
             }
 
             float[] values = event.values;
-            angle = AngleUtil.getSensorAngle(values[0], values[1]);
+
+            mAngle = AngleUtil.getSensorAngle(values[0], values[1]);
         }
 
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
