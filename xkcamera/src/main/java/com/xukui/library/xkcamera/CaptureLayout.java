@@ -102,12 +102,13 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void onRecordShort(long time) {
-                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f).setDuration(2000);
+                tv_tip.setText("录制时间过短");
+
+                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 0f).setDuration(3000);
                 animator.addListener(new Animator.AnimatorListener() {
 
                     @Override
                     public void onAnimationStart(Animator animator) {
-                        tv_tip.setText("录制时间过短");
                     }
 
                     @Override

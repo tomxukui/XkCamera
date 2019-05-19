@@ -38,12 +38,6 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     private volatile static CameraInterface mCameraInterface;
 
-    public static void destroyCameraInterface() {
-        if (mCameraInterface != null) {
-            mCameraInterface = null;
-        }
-    }
-
     private Camera mCamera;
     private Camera.Parameters mParams;
     private boolean isPreviewing = false;
@@ -546,45 +540,52 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
-    //停止录像
-    public void stopRecord(boolean isShort, StopRecordCallback callback) {
+    /**
+     * 停止录像
+     */
+    public void stopRecord(boolean isShort, OnRecordListener listener) {
         if (!isRecorder) {
             return;
         }
 
-        if (mediaRecorder != null) {
-            mediaRecorder.setOnErrorListener(null);
-            mediaRecorder.setOnInfoListener(null);
-            mediaRecorder.setPreviewDisplay(null);
+        if (mediaRecorder == null) {
+            return;
+        }
 
-            try {
-                mediaRecorder.stop();
+        mediaRecorder.setOnErrorListener(null);
+        mediaRecorder.setOnInfoListener(null);
+        mediaRecorder.setPreviewDisplay(null);
 
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                mediaRecorder = null;
-                mediaRecorder = new MediaRecorder();
+        try {
+            mediaRecorder.stop();
 
-            } finally {
-                if (mediaRecorder != null) {
-                    mediaRecorder.release();
-                }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            mediaRecorder = null;
 
-                mediaRecorder = null;
-                isRecorder = false;
+        } finally {
+            if (mediaRecorder != null) {
+                mediaRecorder.release();
             }
 
-            if (isShort) {
-                if (FileUtil.deleteFile(videoFileAbsPath)) {
-                    callback.recordResult(null, null);
-                }
+            mediaRecorder = null;
+            isRecorder = false;
+        }
 
-                return;
+        if (isShort) {
+            FileUtil.deleteFile(videoFileAbsPath);
+
+            if (listener != null) {
+                listener.onShort();
             }
 
+        } else {
             doStopPreview();
-            String fileName = saveVideoPath + File.separator + videoFileName;
-            callback.recordResult(fileName, videoFirstFrame);
+
+            if (listener != null) {
+                String fileName = saveVideoPath + File.separator + videoFileName;
+                listener.onResult(fileName, videoFirstFrame);
+            }
         }
     }
 
@@ -731,8 +732,10 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     };
 
-    public interface StopRecordCallback {
-        void recordResult(String url, Bitmap firstFrame);
+    public static void release() {
+        if (mCameraInterface != null) {
+            mCameraInterface = null;
+        }
     }
 
     public void setOnErrorListener(OnErrorListener listener) {
@@ -756,6 +759,14 @@ public class CameraInterface implements Camera.PreviewCallback {
         void onSuccess();
 
         void onFailure();
+
+    }
+
+    public interface OnRecordListener {
+
+        void onShort();
+
+        void onResult(String url, Bitmap firstFrame);
 
     }
 
