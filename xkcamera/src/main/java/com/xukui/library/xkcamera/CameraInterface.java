@@ -35,6 +35,9 @@ import static android.graphics.Bitmap.createBitmap;
 
 public class CameraInterface implements Camera.PreviewCallback {
 
+    public static final int TYPE_CAPTURE = 0x091;//拍照
+    public static final int TYPE_RECORDER = 0x090;//摄像
+
     private volatile static CameraInterface mCameraInterface;
 
     private Camera mCamera;
@@ -55,17 +58,12 @@ public class CameraInterface implements Camera.PreviewCallback {
     private int mPreviewWidth;
     private int mPreviewHeight;
 
+    private int mMediaQuality = CameraView.MEDIA_QUALITY_MIDDLE;//视频质量
     private int mAngle = 0;
     private int mCameraAngle = 90;//摄像头角度
     private byte[] mPreviewBytes;//预览帧图片
-
-    public static final int TYPE_RECORDER = 0x090;
-    public static final int TYPE_CAPTURE = 0x091;
-    private int nowScaleRate = 0;
-    private int recordScleRate = 0;
-
-    //视频质量
-    private int mediaQuality = CameraView.MEDIA_QUALITY_MIDDLE;
+    private int mNowScaleRate = 0;
+    private int mRecordScaleRate = 0;
 
     private SensorManager mSensorManager = null;
 
@@ -129,10 +127,16 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
+    /**
+     * 设置摄像头的角度
+     */
     public void setCameraAngle(Context context) {
         mCameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
     }
 
+    /**
+     * 设置摄像头的缩放
+     */
     public void setZoom(float zoom, int type) {
         if (mCamera == null) {
             return;
@@ -140,7 +144,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         Camera.Parameters params = mCamera.getParameters();
 
-        if (!params.isZoomSupported() || !params.isSmoothZoomSupported()) {
+        if (!params.isSmoothZoomSupported()) {
             return;
         }
 
@@ -154,10 +158,10 @@ public class CameraInterface implements Camera.PreviewCallback {
                 //每移动50个像素缩放一个级别
                 if (zoom >= 0) {
                     int scaleRate = (int) (zoom / 40);
-                    if (scaleRate <= params.getMaxZoom() && scaleRate >= nowScaleRate && recordScleRate != scaleRate) {
+                    if (scaleRate <= params.getMaxZoom() && scaleRate >= mNowScaleRate && mRecordScaleRate != scaleRate) {
                         params.setZoom(scaleRate);
                         mCamera.setParameters(params);
-                        recordScleRate = scaleRate;
+                        mRecordScaleRate = scaleRate;
                     }
                 }
             }
@@ -171,15 +175,16 @@ public class CameraInterface implements Camera.PreviewCallback {
                 //每移动50个像素缩放一个级别
                 int scaleRate = (int) (zoom / 50);
                 if (scaleRate < params.getMaxZoom()) {
-                    nowScaleRate += scaleRate;
-                    if (nowScaleRate < 0) {
-                        nowScaleRate = 0;
+                    mNowScaleRate += scaleRate;
 
-                    } else if (nowScaleRate > params.getMaxZoom()) {
-                        nowScaleRate = params.getMaxZoom();
+                    if (mNowScaleRate < 0) {
+                        mNowScaleRate = 0;
+
+                    } else if (mNowScaleRate > params.getMaxZoom()) {
+                        mNowScaleRate = params.getMaxZoom();
                     }
 
-                    params.setZoom(nowScaleRate);
+                    params.setZoom(mNowScaleRate);
                     mCamera.setParameters(params);
                 }
             }
@@ -192,8 +197,11 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     }
 
-    void setMediaQuality(int quality) {
-        this.mediaQuality = quality;
+    /**
+     * 设置画质质量
+     */
+    public void setMediaQuality(int quality) {
+        mMediaQuality = quality;
     }
 
     @Override
@@ -201,6 +209,9 @@ public class CameraInterface implements Camera.PreviewCallback {
         mPreviewBytes = data;
     }
 
+    /**
+     * 设置闪光灯
+     */
     public void setFlashMode(String flashMode) {
         if (mCamera == null) {
             return;
@@ -211,17 +222,15 @@ public class CameraInterface implements Camera.PreviewCallback {
         mCamera.setParameters(params);
     }
 
-    public interface CameraOpenOverCallback {
-        void cameraHasOpened();
-    }
-
     /**
-     * open Camera
+     * 打开摄像头
      */
-    void doOpenCamera(CameraOpenOverCallback callback) {
+    public void doOpenCamera(OnOpenCameraListener listener) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (!CheckPermission.isCameraUseable(mSelectedCamera) && mOnErrorListener != null) {
-                mOnErrorListener.onError();
+            if (!CheckPermission.isCameraUseable(mSelectedCamera)) {
+                if (mOnErrorListener != null) {
+                    mOnErrorListener.onError();
+                }
                 return;
             }
         }
@@ -230,15 +239,14 @@ public class CameraInterface implements Camera.PreviewCallback {
             openCamera(mSelectedCamera);
         }
 
-        callback.cameraHasOpened();
+        if (listener != null) {
+            listener.onSuccess();
+        }
     }
 
-    private void setFlashModel() {
-        Camera.Parameters params = mCamera.getParameters();
-        params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH); //设置camera参数为Torch模式
-        mCamera.setParameters(params);
-    }
-
+    /**
+     * 打开摄像头
+     */
     private synchronized void openCamera(int id) {
         try {
             mCamera = Camera.open(id);
@@ -261,6 +269,9 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
+    /**
+     * 切换摄像头
+     */
     public synchronized void switchCamera(SurfaceHolder holder, float screenProp) {
         if (mSelectedCamera == CAMERA_BACK_POSITION) {
             mSelectedCamera = CAMERA_FRONT_POSITION;
@@ -285,7 +296,7 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     /**
-     * doStartPreview
+     * 开始预览
      */
     public void doStartPreview(SurfaceHolder holder, float screenProp) {
         if (mIsPreviewing) {
@@ -524,6 +535,7 @@ public class CameraInterface implements Camera.PreviewCallback {
                     mMediaRecorder.setOrientationHint(nowAngle);
                 }
             }
+
         } else {
             mMediaRecorder.setOrientationHint(nowAngle);
         }
@@ -532,8 +544,9 @@ public class CameraInterface implements Camera.PreviewCallback {
             mMediaRecorder.setVideoEncodingBitRate(4 * 100000);
 
         } else {
-            mMediaRecorder.setVideoEncodingBitRate(mediaQuality);
+            mMediaRecorder.setVideoEncodingBitRate(mMediaQuality);
         }
+
         mMediaRecorder.setPreviewDisplay(surface);
 
         mVideoFileName = "video_" + System.currentTimeMillis() + ".mp4";
@@ -612,6 +625,9 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
+    /**
+     * 处理聚焦
+     */
     public void handleFocus(int screenWidth, int screenHeight, float x, float y, final OnFocusListener listener) {
         if (mCamera == null) {
             if (listener != null) {
@@ -671,6 +687,9 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
+    /**
+     * 计算聚焦的区域
+     */
     private static Rect calculateTapArea(int screenWidth, int screenHeight, float x, float y, float coefficient) {
         float focusAreaSize = 300;
         int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
@@ -730,6 +749,9 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     };
 
+    /**
+     * 释放资源
+     */
     public static void release() {
         if (mCameraInterface != null) {
             mCameraInterface = null;
@@ -765,6 +787,12 @@ public class CameraInterface implements Camera.PreviewCallback {
         void onShort();
 
         void onResult(String filePath, byte[] coverBytes);
+
+    }
+
+    public interface OnOpenCameraListener {
+
+        void onSuccess();
 
     }
 

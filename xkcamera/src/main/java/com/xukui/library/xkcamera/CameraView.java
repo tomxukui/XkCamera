@@ -26,7 +26,7 @@ import com.xukui.library.xkcamera.util.ScreenUtils;
 
 import java.io.IOException;
 
-public class CameraView extends FrameLayout implements CameraInterface.CameraOpenOverCallback, SurfaceHolder.Callback, ICameraView {
+public class CameraView extends FrameLayout implements SurfaceHolder.Callback, ICameraView {
 
     //闪关灯状态
     private static final int TYPE_FLASH_AUTO = 0x021;
@@ -234,6 +234,12 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        CameraInterface.release();
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (mScreenProp == 0) {
@@ -242,11 +248,6 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
             mScreenProp = heightSize / widthSize;
         }
-    }
-
-    @Override
-    public void cameraHasOpened() {
-        CameraInterface.getInstance().doStartPreview(v_preview.getHolder(), mScreenProp);
     }
 
     //生命周期onResume
@@ -265,14 +266,20 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
         CameraInterface.getInstance().unregisterSensorManager(mContext);
     }
 
-    //SurfaceView生命周期
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         new Thread() {
 
             @Override
             public void run() {
-                CameraInterface.getInstance().doOpenCamera(CameraView.this);
+                CameraInterface.getInstance().doOpenCamera(new CameraInterface.OnOpenCameraListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        CameraInterface.getInstance().doStartPreview(v_preview.getHolder(), mScreenProp);
+                    }
+
+                });
             }
 
         }.start();
