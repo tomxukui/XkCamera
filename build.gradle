@@ -7,6 +7,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
 
@@ -14,6 +15,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -38,4 +40,5 @@ ext {
             "constraint-layout"  : "com.android.support.constraint:constraint-layout:1.0.2",
             "recyclerview-v7"    : "com.android.support:recyclerview-v7:27.1.1",
     ]
+
 }
