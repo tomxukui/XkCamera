@@ -10,6 +10,7 @@ public class CameraMachine implements State {
 
     private int mScreenWidth;
     private int mScreenHeight;
+
     private ICameraView mView;
     private State mPreviewState;       //浏览状态(空闲)
     private State mBorrowPictureState; //浏览图片
