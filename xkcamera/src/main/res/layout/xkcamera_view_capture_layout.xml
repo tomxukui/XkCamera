@@ -16,7 +16,7 @@
             android:layout_gravity="center_horizontal"
             android:text="轻触拍照, 长按摄像"
             android:textColor="#ffffff"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <FrameLayout
             android:layout_width="match_parent"
