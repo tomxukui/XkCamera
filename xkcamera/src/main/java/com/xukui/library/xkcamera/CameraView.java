@@ -164,7 +164,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
             @Override
             public void onCancelClick() {
-                mMachine.cancle(v_preview.getHolder(), mScreenProp);
+                mMachine.cancel(v_preview.getHolder(), mScreenProp);
             }
 
             @Override

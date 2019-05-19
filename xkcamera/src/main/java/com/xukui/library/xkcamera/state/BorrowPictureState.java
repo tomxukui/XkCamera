@@ -49,7 +49,7 @@ public class BorrowPictureState implements State {
     }
 
     @Override
-    public void cancle(SurfaceHolder holder, float screenProp) {
+    public void cancel(SurfaceHolder holder, float screenProp) {
         CameraInterface.getInstance().doStartPreview(holder, screenProp);
         machine.getView().resetState(CameraView.TYPE_PICTURE);
         machine.setState(machine.getPreviewState());

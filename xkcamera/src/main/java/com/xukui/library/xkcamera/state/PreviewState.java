@@ -25,7 +25,6 @@ class PreviewState implements State {
         CameraInterface.getInstance().doStopPreview();
     }
 
-
     @Override
     public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
         if (machine.getView().handlerFocus(x, y)) {
@@ -79,7 +78,7 @@ class PreviewState implements State {
     }
 
     @Override
-    public void cancle(SurfaceHolder holder, float screenProp) {
+    public void cancel(SurfaceHolder holder, float screenProp) {
     }
 
     @Override
