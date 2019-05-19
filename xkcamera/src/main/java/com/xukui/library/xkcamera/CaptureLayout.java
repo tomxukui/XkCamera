@@ -102,29 +102,7 @@ public class CaptureLayout extends FrameLayout {
 
             @Override
             public void onRecordShort(long time) {
-                ObjectAnimator animator = ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0f).setDuration(3000);
-                animator.addListener(new Animator.AnimatorListener() {
-
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        tv_tip.setText("录制时间过短");
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        showTipView();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-                    }
-
-                });
-                animator.start();
+                shakeTipView();
 
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onRecordShort(time);
@@ -247,20 +225,51 @@ public class CaptureLayout extends FrameLayout {
     private void showTipView() {
         tv_tip.clearAnimation();
         tv_tip.setText("轻触拍照, 长按摄像");
-
-        ObjectAnimator.ofFloat(tv_tip, "alpha", 0f, 1f)
-                .setDuration(500)
-                .start();
+        tv_tip.setAlpha(1f);
     }
 
     private void hideTipView() {
         tv_tip.clearAnimation();
+        tv_tip.setText("");
+        tv_tip.setAlpha(0f);
+    }
 
-        if (tv_tip.getAlpha() > 0) {
-            ObjectAnimator.ofFloat(tv_tip, "alpha", 1f, 0f)
-                    .setDuration(300)
-                    .start();
-        }
+    private void shakeTipView() {
+        tv_tip.clearAnimation();
+        tv_tip.setText("录制时间过短");
+        tv_tip.setAlpha(1f);
+
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(tv_tip, "translationX", 0f, -20f, 20f, 0f);
+        anim1.setRepeatCount(10);
+        anim1.setDuration(20);
+
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(tv_tip, "alpha", 1f, 0f);
+        anim2.setDuration(300);
+        anim2.setStartDelay(1000);
+
+        AnimatorSet set = new AnimatorSet();
+        set.play(anim1).before(anim2);
+        set.addListener(new Animator.AnimatorListener() {
+
+            @Override
+            public void onAnimationStart(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                showTipView();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+
+        });
+        set.start();
     }
 
     public void setMaxDuration(int duration) {
