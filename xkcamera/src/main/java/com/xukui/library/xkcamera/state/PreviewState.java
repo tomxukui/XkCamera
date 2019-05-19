@@ -28,7 +28,7 @@ class PreviewState implements State {
     @Override
     public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
         if (mMachine.getView().handlerFocus(x, y)) {
-            CameraInterface.getInstance().handleFocus(mMachine.getContext(), x, y, listener);
+            CameraInterface.getInstance().handleFocus(mMachine.getScreenWidth(), mMachine.getScreenHeight(), x, y, listener);
         }
     }
 

@@ -615,7 +615,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
-    public void handleFocus(final Context context, final float x, final float y, final OnFocusListener listener) {
+    public void handleFocus(int screenWidth, int screenHeight, float x, float y, final OnFocusListener listener) {
         if (mCamera == null) {
             if (listener != null) {
                 listener.onFailure();
@@ -624,7 +624,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
 
         final Camera.Parameters params = mCamera.getParameters();
-        Rect focusRect = calculateTapArea(x, y, 1f, context);
+        Rect focusRect = calculateTapArea(screenWidth, screenHeight, x, y, 1f);
         mCamera.cancelAutoFocus();
 
         if (params.getMaxNumFocusAreas() <= 0) {
@@ -674,11 +674,11 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
-    private static Rect calculateTapArea(float x, float y, float coefficient, Context context) {
+    private static Rect calculateTapArea(int screenWidth, int screenHeight, float x, float y, float coefficient) {
         float focusAreaSize = 300;
         int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
-        int centerX = (int) (x / ScreenUtils.getScreenWidth(context) * 2000 - 1000);
-        int centerY = (int) (y / ScreenUtils.getScreenHeight(context) * 2000 - 1000);
+        int centerX = (int) (x / screenWidth * 2000 - 1000);
+        int centerY = (int) (y / screenHeight * 2000 - 1000);
         int left = clamp(centerX - areaSize / 2, -1000, 1000);
         int top = clamp(centerY - areaSize / 2, -1000, 1000);
         RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);

@@ -22,6 +22,7 @@ import android.widget.VideoView;
 
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
+import com.xukui.library.xkcamera.util.ScreenUtils;
 
 import java.io.IOException;
 
@@ -103,7 +104,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
             a.recycle();
         }
 
-        mMachine = new CameraMachine(context, this);
+        mMachine = new CameraMachine(this, ScreenUtils.getScreenWidth(context), ScreenUtils.getScreenHeight(context));
     }
 
     private void initView(Context context) {

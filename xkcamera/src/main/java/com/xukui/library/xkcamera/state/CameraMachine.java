@@ -1,6 +1,5 @@
 package com.xukui.library.xkcamera.state;
 
-import android.content.Context;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -9,15 +8,17 @@ import com.xukui.library.xkcamera.ICameraView;
 
 public class CameraMachine implements State {
 
-    private Context mContext;
+    private int mScreenWidth;
+    private int mScreenHeight;
     private ICameraView mView;
     private State mPreviewState;       //浏览状态(空闲)
     private State mBorrowPictureState; //浏览图片
     private State mBorrowVideoState;   //浏览视频
     private State mState;
 
-    public CameraMachine(Context context, ICameraView view) {
-        mContext = context;
+    public CameraMachine(ICameraView view, int screenWidth, int screenHeight) {
+        mScreenWidth = screenWidth;
+        mScreenHeight = screenHeight;
         mView = view;
         mPreviewState = new PreviewState(this);
         mBorrowPictureState = new BorrowPictureState(this);
@@ -29,12 +30,16 @@ public class CameraMachine implements State {
         return mView;
     }
 
-    public Context getContext() {
-        return mContext;
-    }
-
     public void setState(State state) {
         mState = state;
+    }
+
+    public int getScreenWidth() {
+        return mScreenWidth;
+    }
+
+    public int getScreenHeight() {
+        return mScreenHeight;
     }
 
     //获取浏览图片状态
@@ -110,10 +115,6 @@ public class CameraMachine implements State {
     @Override
     public void flash(String mode) {
         mState.flash(mode);
-    }
-
-    public State getState() {
-        return mState;
     }
 
 }
