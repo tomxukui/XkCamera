@@ -23,6 +23,7 @@ import com.xukui.library.xkcamera.util.CameraParamUtil;
 import com.xukui.library.xkcamera.util.CheckPermission;
 import com.xukui.library.xkcamera.util.DeviceUtil;
 import com.xukui.library.xkcamera.util.FileUtil;
+import com.xukui.library.xkcamera.util.ImageUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -408,8 +409,16 @@ public class CameraInterface implements Camera.PreviewCallback {
 
                 if (listener != null) {
                     boolean isVertical = (finalNowAngle == 90 || finalNowAngle == 270);
-                    listener.onResult(bitmap, isVertical);
+                    byte[] bytes = ImageUtil.bitmap2Bytes(bitmap, Bitmap.CompressFormat.JPEG, 100);
+
+                    listener.onResult(bytes, isVertical);
                 }
+
+                if (!bitmap.isRecycled()) {
+                    bitmap.recycle();
+                }
+
+                bitmap = null;
             }
         });
     }
@@ -733,7 +742,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     public interface OnTakePictureListener {
 
-        void onResult(Bitmap bitmap, boolean isVertical);
+        void onResult(byte[] bytes, boolean isVertical);
 
     }
 

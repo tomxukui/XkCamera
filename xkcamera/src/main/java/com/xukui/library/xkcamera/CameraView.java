@@ -22,6 +22,7 @@ import android.widget.VideoView;
 
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
+import com.xukui.library.xkcamera.util.ImageUtil;
 import com.xukui.library.xkcamera.util.ScreenUtils;
 
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     private float mFirstTouchLength;
     private String mVideoUrl;//视频URL
 
-    private Bitmap captureBitmap;//捕获的图片
+    private byte[] mPhotoBytes;//照片
     private Bitmap firstFrame;//第一帧图片
 
     private OnCameraListener mOnCameraListener;
@@ -437,7 +438,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
                 iv_photo.setVisibility(INVISIBLE);
 
                 if (mOnCameraListener != null) {
-                    mOnCameraListener.onPhoto(captureBitmap);
+                    mOnCameraListener.onPhoto(mPhotoBytes);
                 }
             }
             break;
@@ -451,11 +452,11 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     }
 
     @Override
-    public void showPhoto(Bitmap bitmap, boolean isVertical) {
-        captureBitmap = bitmap;
+    public void showPhoto(byte[] bytes, boolean isVertical) {
+        mPhotoBytes = bytes;
 
         iv_photo.setScaleType(isVertical ? ImageView.ScaleType.FIT_XY : ImageView.ScaleType.FIT_CENTER);
-        iv_photo.setImageBitmap(bitmap);
+        iv_photo.setImageDrawable(ImageUtil.bytes2Drawable(getResources(), bytes));
         iv_photo.setVisibility(VISIBLE);
 
         layout_capture.setCaptureEndView();
@@ -587,7 +588,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
     public interface OnCameraListener {
 
-        void onPhoto(Bitmap bitmap);
+        void onPhoto(byte[] bytes);
 
         void onVideo(String url, Bitmap firstFrame);
 

@@ -46,8 +46,8 @@ class PreviewState implements State {
         CameraInterface.getInstance().takePicture(new CameraInterface.OnTakePictureListener() {
 
             @Override
-            public void onResult(Bitmap bitmap, boolean isVertical) {
-                mMachine.getView().showPhoto(bitmap, isVertical);
+            public void onResult(byte[] bytes, boolean isVertical) {
+                mMachine.getView().showPhoto(bytes, isVertical);
                 mMachine.setState(mMachine.getBorrowPictureState());
             }
 

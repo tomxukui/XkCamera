@@ -40,7 +40,8 @@ public class CameraActivity extends AppCompatActivity {
         view_camera.setOnCameraListener(new CameraView.OnCameraListener() {
 
             @Override
-            public void onPhoto(Bitmap bitmap) {
+            public void onPhoto(byte[] bytes) {
+
             }
 
             @Override
