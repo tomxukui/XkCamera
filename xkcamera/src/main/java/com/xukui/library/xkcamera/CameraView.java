@@ -371,8 +371,8 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
      * 对外提供的API                     *
      **************************************************/
 
-    public void setSaveVideoPath(String path) {
-        CameraInterface.getInstance().setSaveVideoPath(path);
+    public void setVideoDirectory(String path) {
+        CameraInterface.getInstance().setVideoDirectory(path);
     }
 
     //设置CaptureButton功能（拍照和录像）

@@ -15,8 +15,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.os.Environment;
-import android.text.TextUtils;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -40,16 +38,15 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     private Camera mCamera;
     private boolean mIsPreviewing = false;
+    private boolean mIsRecorder = false;//当前是否在录像
 
     private int CAMERA_FRONT_POSITION = -1;//正面摄像头
     private int CAMERA_BACK_POSITION = -1;//反面摄像头
     private int mSelectedCamera = -1;//当前选择的摄像头
 
-    private boolean isRecorder = false;
-    private MediaRecorder mediaRecorder;
-    private String videoFileName;
-    private String saveVideoPath;
-    private String videoFileAbsPath;
+    private MediaRecorder mMediaRecorder;
+    private String mVideoDirectory;
+    private String mVideoFileName;
     private Bitmap videoFirstFrame;
 
     private OnErrorListener mOnErrorListener;
@@ -88,7 +85,6 @@ public class CameraInterface implements Camera.PreviewCallback {
         findAvailableCameras();
 
         mSelectedCamera = CAMERA_BACK_POSITION;
-        saveVideoPath = "";
     }
 
     /**
@@ -120,17 +116,20 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
     }
 
-    public void setCameraAngle(Context context) {
-        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
-    }
+    /**
+     * 设置视频存放目录
+     */
+    public void setVideoDirectory(String path) {
+        mVideoDirectory = path;
 
-    void setSaveVideoPath(String saveVideoPath) {
-        this.saveVideoPath = saveVideoPath;
-
-        File file = new File(saveVideoPath);
+        File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
+    }
+
+    public void setCameraAngle(Context context) {
+        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
     }
 
     public void setZoom(float zoom, int type) {
@@ -147,7 +146,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         switch (type) {
 
             case TYPE_RECORDER: {//如果不是录制视频中，上滑不会缩放
-                if (!isRecorder) {
+                if (!mIsRecorder) {
                     return;
                 }
 
@@ -164,7 +163,7 @@ public class CameraInterface implements Camera.PreviewCallback {
             break;
 
             case TYPE_CAPTURE: {
-                if (isRecorder) {
+                if (mIsRecorder) {
                     return;
                 }
 
@@ -442,7 +441,7 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         videoFirstFrame = createBitmap(videoFirstFrame, 0, 0, videoFirstFrame.getWidth(), videoFirstFrame.getHeight(), matrix, true);
 
-        if (isRecorder) {
+        if (mIsRecorder) {
             return;
         }
 
@@ -450,8 +449,8 @@ public class CameraInterface implements Camera.PreviewCallback {
             openCamera(mSelectedCamera);
         }
 
-        if (mediaRecorder == null) {
-            mediaRecorder = new MediaRecorder();
+        if (mMediaRecorder == null) {
+            mMediaRecorder = new MediaRecorder();
         }
 
         Camera.Parameters params = mCamera.getParameters();
@@ -463,13 +462,13 @@ public class CameraInterface implements Camera.PreviewCallback {
 
         mCamera.setParameters(params);
         mCamera.unlock();
-        mediaRecorder.reset();
-        mediaRecorder.setCamera(mCamera);
-        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mMediaRecorder.reset();
+        mMediaRecorder.setCamera(mCamera);
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
         Camera.Size videoSize;
         if (params.getSupportedVideoSizes() == null) {
@@ -480,10 +479,10 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
 
         if (videoSize.width == videoSize.height) {
-            mediaRecorder.setVideoSize(preview_width, preview_height);
+            mMediaRecorder.setVideoSize(preview_width, preview_height);
 
         } else {
-            mediaRecorder.setVideoSize(videoSize.width, videoSize.height);
+            mMediaRecorder.setVideoSize(videoSize.width, videoSize.height);
         }
 
         if (mSelectedCamera == CAMERA_FRONT_POSITION) {
@@ -491,49 +490,45 @@ public class CameraInterface implements Camera.PreviewCallback {
             if (cameraAngle == 270) {
                 //横屏
                 if (nowAngle == 0) {
-                    mediaRecorder.setOrientationHint(180);
+                    mMediaRecorder.setOrientationHint(180);
 
                 } else if (nowAngle == 270) {
-                    mediaRecorder.setOrientationHint(270);
+                    mMediaRecorder.setOrientationHint(270);
 
                 } else {
-                    mediaRecorder.setOrientationHint(90);
+                    mMediaRecorder.setOrientationHint(90);
                 }
 
             } else {
                 if (nowAngle == 90) {
-                    mediaRecorder.setOrientationHint(270);
+                    mMediaRecorder.setOrientationHint(270);
 
                 } else if (nowAngle == 270) {
-                    mediaRecorder.setOrientationHint(90);
+                    mMediaRecorder.setOrientationHint(90);
 
                 } else {
-                    mediaRecorder.setOrientationHint(nowAngle);
+                    mMediaRecorder.setOrientationHint(nowAngle);
                 }
             }
         } else {
-            mediaRecorder.setOrientationHint(nowAngle);
+            mMediaRecorder.setOrientationHint(nowAngle);
         }
 
         if (DeviceUtil.isHuaWeiRongyao()) {
-            mediaRecorder.setVideoEncodingBitRate(4 * 100000);
+            mMediaRecorder.setVideoEncodingBitRate(4 * 100000);
 
         } else {
-            mediaRecorder.setVideoEncodingBitRate(mediaQuality);
+            mMediaRecorder.setVideoEncodingBitRate(mediaQuality);
         }
-        mediaRecorder.setPreviewDisplay(surface);
+        mMediaRecorder.setPreviewDisplay(surface);
 
-        videoFileName = "video_" + System.currentTimeMillis() + ".mp4";
-        if (TextUtils.isEmpty(saveVideoPath)) {
-            saveVideoPath = Environment.getExternalStorageDirectory().getPath();
-        }
-        videoFileAbsPath = saveVideoPath + File.separator + videoFileName;
-        mediaRecorder.setOutputFile(videoFileAbsPath);
+        mVideoFileName = "video_" + System.currentTimeMillis() + ".mp4";
+        mMediaRecorder.setOutputFile(mVideoDirectory + File.separator + mVideoFileName);
 
         try {
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            isRecorder = true;
+            mMediaRecorder.prepare();
+            mMediaRecorder.start();
+            mIsRecorder = true;
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
@@ -557,36 +552,38 @@ public class CameraInterface implements Camera.PreviewCallback {
      * 停止录像
      */
     public void stopRecord(boolean isShort, OnRecordListener listener) {
-        if (!isRecorder) {
+        if (!mIsRecorder) {
             return;
         }
 
-        if (mediaRecorder == null) {
+        if (mMediaRecorder == null) {
             return;
         }
 
-        mediaRecorder.setOnErrorListener(null);
-        mediaRecorder.setOnInfoListener(null);
-        mediaRecorder.setPreviewDisplay(null);
+        mMediaRecorder.setOnErrorListener(null);
+        mMediaRecorder.setOnInfoListener(null);
+        mMediaRecorder.setPreviewDisplay(null);
 
         try {
-            mediaRecorder.stop();
+            mMediaRecorder.stop();
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            mediaRecorder = null;
+            mMediaRecorder = null;
 
         } finally {
-            if (mediaRecorder != null) {
-                mediaRecorder.release();
+            if (mMediaRecorder != null) {
+                mMediaRecorder.release();
             }
 
-            mediaRecorder = null;
-            isRecorder = false;
+            mMediaRecorder = null;
+            mIsRecorder = false;
         }
 
+        String filePath = mVideoDirectory + File.separator + mVideoFileName;
+
         if (isShort) {
-            FileUtil.deleteFile(videoFileAbsPath);
+            FileUtil.deleteFile(filePath);
 
             if (listener != null) {
                 listener.onShort();
@@ -596,8 +593,7 @@ public class CameraInterface implements Camera.PreviewCallback {
             doStopPreview();
 
             if (listener != null) {
-                String fileName = saveVideoPath + File.separator + videoFileName;
-                listener.onResult(fileName, videoFirstFrame);
+                listener.onResult(filePath, videoFirstFrame);
             }
         }
     }

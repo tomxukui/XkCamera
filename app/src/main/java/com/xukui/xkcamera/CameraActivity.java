@@ -34,7 +34,7 @@ public class CameraActivity extends AppCompatActivity {
         view_camera = findViewById(R.id.view_camera);
 
         //设置视频保存路径
-        view_camera.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "JCamera");
+        view_camera.setVideoDirectory(Environment.getExternalStorageDirectory().getPath() + File.separator + "XkCamera");
 
         //JCameraView监听
         view_camera.setOnCameraListener(new CameraView.OnCameraListener() {
