@@ -47,7 +47,7 @@ class PreviewState implements State {
 
             @Override
             public void onResult(Bitmap bitmap, boolean isVertical) {
-                mMachine.getView().showPicture(bitmap, isVertical);
+                mMachine.getView().showPhoto(bitmap, isVertical);
                 mMachine.setState(mMachine.getBorrowPictureState());
             }
 

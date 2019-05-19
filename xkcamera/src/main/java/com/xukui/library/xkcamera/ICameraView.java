@@ -8,7 +8,7 @@ public interface ICameraView {
 
     void confirmState(int type);
 
-    void showPicture(Bitmap bitmap, boolean isVertical);
+    void showPhoto(Bitmap bitmap, boolean isVertical);
 
     void playVideo(Bitmap firstFrame, String url);
 

@@ -451,7 +451,7 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
     }
 
     @Override
-    public void showPicture(Bitmap bitmap, boolean isVertical) {
+    public void showPhoto(Bitmap bitmap, boolean isVertical) {
         if (isVertical) {
             iv_photo.setScaleType(ImageView.ScaleType.FIT_XY);
 
