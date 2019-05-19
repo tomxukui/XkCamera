@@ -106,23 +106,6 @@ public class CameraParamUtil {
         return false;
     }
 
-    private static class CameraSizeComparator implements Comparator<Camera.Size> {
-
-        @Override
-        public int compare(Camera.Size lhs, Camera.Size rhs) {
-            if (lhs.width == rhs.width) {
-                return 0;
-
-            } else if (lhs.width > rhs.width) {
-                return 1;
-
-            } else {
-                return -1;
-            }
-        }
-
-    }
-
     public static int getCameraDisplayOrientation(Context context, int cameraId) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);

@@ -71,7 +71,8 @@ public class CameraInterface implements Camera.PreviewCallback {
 
     //视频质量
     private int mediaQuality = CameraView.MEDIA_QUALITY_MIDDLE;
-    private SensorManager sm = null;
+
+    private SensorManager mSensorManager = null;
 
     //获取CameraInterface单例
     public static synchronized CameraInterface getInstance() {
@@ -90,7 +91,6 @@ public class CameraInterface implements Camera.PreviewCallback {
         cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, SELECTED_CAMERA);
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     void setSaveVideoPath(String saveVideoPath) {
         this.saveVideoPath = saveVideoPath;
 
@@ -697,19 +697,19 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     void registerSensorManager(Context context) {
-        if (sm == null) {
-            sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        if (mSensorManager == null) {
+            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         }
 
-        sm.registerListener(mSensorEventListener, sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(mSensorEventListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     void unregisterSensorManager(Context context) {
-        if (sm == null) {
-            sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        if (mSensorManager == null) {
+            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         }
 
-        sm.unregisterListener(mSensorEventListener);
+        mSensorManager.unregisterListener(mSensorEventListener);
     }
 
     void isPreview(boolean res) {
