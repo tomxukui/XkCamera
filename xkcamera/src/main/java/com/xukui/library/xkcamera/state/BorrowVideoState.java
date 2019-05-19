@@ -8,16 +8,16 @@ import com.xukui.library.xkcamera.CameraView;
 
 public class BorrowVideoState implements State {
 
-    private CameraMachine machine;
+    private CameraMachine mMachine;
 
     public BorrowVideoState(CameraMachine machine) {
-        this.machine = machine;
+        mMachine = machine;
     }
 
     @Override
     public void start(SurfaceHolder holder, float screenProp) {
         CameraInterface.getInstance().doStartPreview(holder, screenProp);
-        machine.setState(machine.getPreviewState());
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override
@@ -50,14 +50,14 @@ public class BorrowVideoState implements State {
 
     @Override
     public void cancel(SurfaceHolder holder, float screenProp) {
-        machine.getView().resetState(CameraView.TYPE_VIDEO);
-        machine.setState(machine.getPreviewState());
+        mMachine.getView().resetState(CameraView.TYPE_VIDEO);
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override
     public void confirm() {
-        machine.getView().confirmState(CameraView.TYPE_VIDEO);
-        machine.setState(machine.getPreviewState());
+        mMachine.getView().confirmState(CameraView.TYPE_VIDEO);
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override

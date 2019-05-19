@@ -9,113 +9,111 @@ import com.xukui.library.xkcamera.ICameraView;
 
 public class CameraMachine implements State {
 
-    private Context context;
-    private State state;
-    private ICameraView view;
-
-    private State previewState;       //浏览状态(空闲)
-    private State borrowPictureState; //浏览图片
-    private State borrowVideoState;   //浏览视频
+    private Context mContext;
+    private ICameraView mView;
+    private State mPreviewState;       //浏览状态(空闲)
+    private State mBorrowPictureState; //浏览图片
+    private State mBorrowVideoState;   //浏览视频
+    private State mState;
 
     public CameraMachine(Context context, ICameraView view) {
-        this.context = context;
-        previewState = new PreviewState(this);
-        borrowPictureState = new BorrowPictureState(this);
-        borrowVideoState = new BorrowVideoState(this);
-        //默认设置为空闲状态
-        this.state = previewState;
-        this.view = view;
+        mContext = context;
+        mView = view;
+        mPreviewState = new PreviewState(this);
+        mBorrowPictureState = new BorrowPictureState(this);
+        mBorrowVideoState = new BorrowVideoState(this);
+        mState = mPreviewState;
     }
 
     public ICameraView getView() {
-        return view;
+        return mView;
     }
 
     public Context getContext() {
-        return context;
+        return mContext;
     }
 
     public void setState(State state) {
-        this.state = state;
+        mState = state;
     }
 
     //获取浏览图片状态
     State getBorrowPictureState() {
-        return borrowPictureState;
+        return mBorrowPictureState;
     }
 
     //获取浏览视频状态
     State getBorrowVideoState() {
-        return borrowVideoState;
+        return mBorrowVideoState;
     }
 
     //获取空闲状态
     State getPreviewState() {
-        return previewState;
+        return mPreviewState;
     }
 
     @Override
     public void start(SurfaceHolder holder, float screenProp) {
-        state.start(holder, screenProp);
+        mState.start(holder, screenProp);
     }
 
     @Override
     public void stop() {
-        state.stop();
+        mState.stop();
     }
 
     @Override
     public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
-        state.focus(x, y, listener);
+        mState.focus(x, y, listener);
     }
 
     @Override
     public void switchCamera(SurfaceHolder holder, float screenProp) {
-        state.switchCamera(holder, screenProp);
+        mState.switchCamera(holder, screenProp);
     }
 
     @Override
     public void restart() {
-        state.restart();
+        mState.restart();
     }
 
     @Override
     public void capture() {
-        state.capture();
+        mState.capture();
     }
 
     @Override
     public void record(Surface surface, float screenProp) {
-        state.record(surface, screenProp);
+        mState.record(surface, screenProp);
     }
 
     @Override
     public void stopRecord(boolean isShort, long time) {
-        state.stopRecord(isShort, time);
+        mState.stopRecord(isShort, time);
     }
 
     @Override
     public void cancel(SurfaceHolder holder, float screenProp) {
-        state.cancel(holder, screenProp);
+        mState.cancel(holder, screenProp);
     }
 
     @Override
     public void confirm() {
-        state.confirm();
+        mState.confirm();
     }
 
     @Override
     public void zoom(float zoom, int type) {
-        state.zoom(zoom, type);
+        mState.zoom(zoom, type);
     }
 
     @Override
     public void flash(String mode) {
-        state.flash(mode);
+        mState.flash(mode);
     }
 
     public State getState() {
-        return this.state;
+        return mState;
     }
 
 }

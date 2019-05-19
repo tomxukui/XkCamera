@@ -9,10 +9,10 @@ import com.xukui.library.xkcamera.CameraView;
 
 class PreviewState implements State {
 
-    private CameraMachine machine;
+    private CameraMachine mMachine;
 
     PreviewState(CameraMachine machine) {
-        this.machine = machine;
+        mMachine = machine;
     }
 
     @Override
@@ -27,8 +27,8 @@ class PreviewState implements State {
 
     @Override
     public void focus(float x, float y, CameraInterface.OnFocusListener listener) {
-        if (machine.getView().handlerFocus(x, y)) {
-            CameraInterface.getInstance().handleFocus(machine.getContext(), x, y, listener);
+        if (mMachine.getView().handlerFocus(x, y)) {
+            CameraInterface.getInstance().handleFocus(mMachine.getContext(), x, y, listener);
         }
     }
 
@@ -47,8 +47,8 @@ class PreviewState implements State {
 
             @Override
             public void onResult(Bitmap bitmap, boolean isVertical) {
-                machine.getView().showPicture(bitmap, isVertical);
-                machine.setState(machine.getBorrowPictureState());
+                mMachine.getView().showPicture(bitmap, isVertical);
+                mMachine.setState(mMachine.getBorrowPictureState());
             }
 
         });
@@ -65,13 +65,13 @@ class PreviewState implements State {
 
             @Override
             public void onShort() {
-                machine.getView().resetState(CameraView.TYPE_SHORT);
+                mMachine.getView().resetState(CameraView.TYPE_SHORT);
             }
 
             @Override
             public void onResult(String url, Bitmap firstFrame) {
-                machine.getView().playVideo(firstFrame, url);
-                machine.setState(machine.getBorrowVideoState());
+                mMachine.getView().playVideo(firstFrame, url);
+                mMachine.setState(mMachine.getBorrowVideoState());
             }
 
         });

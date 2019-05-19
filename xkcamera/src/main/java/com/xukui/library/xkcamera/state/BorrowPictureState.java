@@ -8,16 +8,16 @@ import com.xukui.library.xkcamera.CameraView;
 
 public class BorrowPictureState implements State {
 
-    private CameraMachine machine;
+    private CameraMachine mMachine;
 
     public BorrowPictureState(CameraMachine machine) {
-        this.machine = machine;
+        mMachine = machine;
     }
 
     @Override
     public void start(SurfaceHolder holder, float screenProp) {
         CameraInterface.getInstance().doStartPreview(holder, screenProp);
-        machine.setState(machine.getPreviewState());
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BorrowPictureState implements State {
     }
 
     @Override
-    public void record(Surface surface,float screenProp) {
+    public void record(Surface surface, float screenProp) {
     }
 
     @Override
@@ -51,14 +51,14 @@ public class BorrowPictureState implements State {
     @Override
     public void cancel(SurfaceHolder holder, float screenProp) {
         CameraInterface.getInstance().doStartPreview(holder, screenProp);
-        machine.getView().resetState(CameraView.TYPE_PICTURE);
-        machine.setState(machine.getPreviewState());
+        mMachine.getView().resetState(CameraView.TYPE_PICTURE);
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override
     public void confirm() {
-        machine.getView().confirmState(CameraView.TYPE_PICTURE);
-        machine.setState(machine.getPreviewState());
+        mMachine.getView().confirmState(CameraView.TYPE_PICTURE);
+        mMachine.setState(mMachine.getPreviewState());
     }
 
     @Override
