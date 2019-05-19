@@ -41,11 +41,9 @@ public class CameraInterface implements Camera.PreviewCallback {
     private Camera mCamera;
     private boolean mIsPreviewing = false;
 
-    private int SELECTED_CAMERA = -1;
-    private int CAMERA_POST_POSITION = -1;
-    private int CAMERA_FRONT_POSITION = -1;
-
-    private float screenProp = -1.0f;
+    private int CAMERA_FRONT_POSITION = -1;//正面摄像头
+    private int CAMERA_BACK_POSITION = -1;//反面摄像头
+    private int mSelectedCamera = -1;//当前选择的摄像头
 
     private boolean isRecorder = false;
     private MediaRecorder mediaRecorder;
@@ -86,8 +84,44 @@ public class CameraInterface implements Camera.PreviewCallback {
         return mCameraInterface;
     }
 
+    private CameraInterface() {
+        findAvailableCameras();
+
+        mSelectedCamera = CAMERA_BACK_POSITION;
+        saveVideoPath = "";
+    }
+
+    /**
+     * 寻找合适的摄像头
+     */
+    private void findAvailableCameras() {
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        int count = Camera.getNumberOfCameras();
+
+        for (int i = 0; i < count; i++) {
+            Camera.getCameraInfo(i, info);
+
+            switch (info.facing) {
+
+                case Camera.CameraInfo.CAMERA_FACING_FRONT: {
+                    CAMERA_FRONT_POSITION = info.facing;
+                }
+                break;
+
+                case Camera.CameraInfo.CAMERA_FACING_BACK: {
+                    CAMERA_BACK_POSITION = info.facing;
+                }
+                break;
+
+                default:
+                    break;
+
+            }
+        }
+    }
+
     public void setCameraAngle(Context context) {
-        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, SELECTED_CAMERA);
+        cameraAngle = CameraParamUtil.getCameraDisplayOrientation(context, mSelectedCamera);
     }
 
     void setSaveVideoPath(String saveVideoPath) {
@@ -181,25 +215,19 @@ public class CameraInterface implements Camera.PreviewCallback {
         void cameraHasOpened();
     }
 
-    private CameraInterface() {
-        findAvailableCameras();
-        SELECTED_CAMERA = CAMERA_POST_POSITION;
-        saveVideoPath = "";
-    }
-
     /**
      * open Camera
      */
     void doOpenCamera(CameraOpenOverCallback callback) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (!CheckPermission.isCameraUseable(SELECTED_CAMERA) && mOnErrorListener != null) {
+            if (!CheckPermission.isCameraUseable(mSelectedCamera) && mOnErrorListener != null) {
                 mOnErrorListener.onError();
                 return;
             }
         }
 
         if (mCamera == null) {
-            openCamera(SELECTED_CAMERA);
+            openCamera(mSelectedCamera);
         }
 
         callback.cameraHasOpened();
@@ -234,15 +262,15 @@ public class CameraInterface implements Camera.PreviewCallback {
     }
 
     public synchronized void switchCamera(SurfaceHolder holder, float screenProp) {
-        if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
-            SELECTED_CAMERA = CAMERA_FRONT_POSITION;
+        if (mSelectedCamera == CAMERA_BACK_POSITION) {
+            mSelectedCamera = CAMERA_FRONT_POSITION;
 
         } else {
-            SELECTED_CAMERA = CAMERA_POST_POSITION;
+            mSelectedCamera = CAMERA_BACK_POSITION;
         }
 
         doDestroyCamera();
-        openCamera(SELECTED_CAMERA);
+        openCamera(mSelectedCamera);
 
         if (Build.VERSION.SDK_INT > 17 && mCamera != null) {
             try {
@@ -262,10 +290,6 @@ public class CameraInterface implements Camera.PreviewCallback {
     public void doStartPreview(SurfaceHolder holder, float screenProp) {
         if (mIsPreviewing) {
             return;
-        }
-
-        if (this.screenProp < 0) {
-            this.screenProp = screenProp;
         }
 
         if (holder == null) {
@@ -373,10 +397,10 @@ public class CameraInterface implements Camera.PreviewCallback {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
                 Matrix matrix = new Matrix();
-                if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
+                if (mSelectedCamera == CAMERA_BACK_POSITION) {
                     matrix.setRotate(finalNowAngle);
 
-                } else if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
+                } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
                     matrix.setRotate(360 - finalNowAngle);
                     matrix.postScale(-1, 1);
                 }
@@ -409,10 +433,10 @@ public class CameraInterface implements Camera.PreviewCallback {
         videoFirstFrame = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
         Matrix matrix = new Matrix();
-        if (SELECTED_CAMERA == CAMERA_POST_POSITION) {
+        if (mSelectedCamera == CAMERA_BACK_POSITION) {
             matrix.setRotate(nowAngle);
 
-        } else if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
+        } else if (mSelectedCamera == CAMERA_FRONT_POSITION) {
             matrix.setRotate(270);
         }
 
@@ -423,7 +447,7 @@ public class CameraInterface implements Camera.PreviewCallback {
         }
 
         if (mCamera == null) {
-            openCamera(SELECTED_CAMERA);
+            openCamera(mSelectedCamera);
         }
 
         if (mediaRecorder == null) {
@@ -462,7 +486,7 @@ public class CameraInterface implements Camera.PreviewCallback {
             mediaRecorder.setVideoSize(videoSize.width, videoSize.height);
         }
 
-        if (SELECTED_CAMERA == CAMERA_FRONT_POSITION) {
+        if (mSelectedCamera == CAMERA_FRONT_POSITION) {
             //手机预览倒立的处理
             if (cameraAngle == 270) {
                 //横屏
@@ -574,32 +598,6 @@ public class CameraInterface implements Camera.PreviewCallback {
             if (listener != null) {
                 String fileName = saveVideoPath + File.separator + videoFileName;
                 listener.onResult(fileName, videoFirstFrame);
-            }
-        }
-    }
-
-    private void findAvailableCameras() {
-        int count = Camera.getNumberOfCameras();
-
-        for (int i = 0; i < count; i++) {
-            Camera.CameraInfo info = new Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-
-            switch (info.facing) {
-
-                case Camera.CameraInfo.CAMERA_FACING_FRONT: {
-                    CAMERA_FRONT_POSITION = info.facing;
-                }
-                return;
-
-                case Camera.CameraInfo.CAMERA_FACING_BACK: {
-                    CAMERA_POST_POSITION = info.facing;
-                }
-                return;
-
-                default:
-                    break;
-
             }
         }
     }
