@@ -452,16 +452,12 @@ public class CameraView extends FrameLayout implements CameraInterface.CameraOpe
 
     @Override
     public void showPhoto(Bitmap bitmap, boolean isVertical) {
-        if (isVertical) {
-            iv_photo.setScaleType(ImageView.ScaleType.FIT_XY);
-
-        } else {
-            iv_photo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        }
-
         captureBitmap = bitmap;
+
+        iv_photo.setScaleType(isVertical ? ImageView.ScaleType.FIT_XY : ImageView.ScaleType.FIT_CENTER);
         iv_photo.setImageBitmap(bitmap);
         iv_photo.setVisibility(VISIBLE);
+
         layout_capture.setCaptureEndView();
     }
 
