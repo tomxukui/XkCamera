@@ -8,11 +8,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class CaptureLayout extends FrameLayout {
+public class CaptureLayout extends LinearLayout {
 
     private TextView tv_tip;
     private StableImageView iv_back;
@@ -37,6 +37,8 @@ public class CaptureLayout extends FrameLayout {
     }
 
     private void initView(Context context) {
+        setOrientation(VERTICAL);
+
         View view = LayoutInflater.from(context).inflate(R.layout.xkcamera_view_capture_layout, this);
         tv_tip = view.findViewById(R.id.tv_tip);
         iv_back = view.findViewById(R.id.iv_back);

@@ -4,60 +4,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="轻触拍照, 长按摄像"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp">
 
-        <TextView
-            android:id="@+id/tv_tip"
+        <com.xukui.library.xkcamera.StableImageView
+            android:id="@+id/iv_back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="20dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_back" />
+
+        <ImageView
+            android:id="@+id/iv_cancel"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_cancel_circle"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_confirm"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_sure_circle"
+            android:visibility="gone" />
+
+        <com.xukui.library.xkcamera.CaptureButton
+            android:id="@+id/btn_capture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="轻触拍照, 长按摄像"
-            android:textColor="#ffffff"
-            android:textSize="14sp" />
+            android:layout_gravity="center"
+            app:size="80dp" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp">
-
-            <com.xukui.library.xkcamera.StableImageView
-                android:id="@+id/iv_back"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="left|center_vertical"
-                android:layout_marginLeft="20dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_back" />
-
-            <ImageView
-                android:id="@+id/iv_cancel"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_cancel_circle"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/iv_confirm"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_sure_circle"
-                android:visibility="gone" />
-
-            <com.xukui.library.xkcamera.CaptureButton
-                android:id="@+id/btn_capture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:size="80dp" />
-
-        </FrameLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </merge>
