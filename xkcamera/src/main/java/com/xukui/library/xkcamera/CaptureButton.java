@@ -17,9 +17,9 @@ import android.view.View;
 
 import com.xukui.library.xkcamera.util.CheckPermission;
 
-import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_BOTH;
-import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_ONLY_CAPTURE;
-import static com.xukui.library.xkcamera.CameraView.BUTTON_STATE_ONLY_RECORDER;
+import static com.xukui.library.xkcamera.CameraView.MODE_ALL;
+import static com.xukui.library.xkcamera.CameraView.MODE_PHOTO;
+import static com.xukui.library.xkcamera.CameraView.MODE_VIDEO;
 
 public class CaptureButton extends View {
 
@@ -43,7 +43,7 @@ public class CaptureButton extends View {
 
     private int mRecordedTime;//记录当前录制的时间
     private int mState;//当前按钮状态
-    private int mActionState;//按钮可执行的功能状态（拍照,录制,两者）
+    private int mMode;//按钮可执行的功能状态（拍照,录制,两者）
 
     private int mProgressColor;//进度条颜色
     private int mOutsideColor;//外圆背景色
@@ -113,7 +113,7 @@ public class CaptureButton extends View {
 
         mProgress = 0;
         mState = STATE_IDLE;//初始化为空闲状态
-        mActionState = BUTTON_STATE_BOTH;//初始化按钮为可录制可拍照
+        mMode = MODE_ALL;//初始化按钮为可录制可拍照
 
         mTimer = new RecordCountDownTimer(mMaxDuration, mMaxDuration / 360);//定时器
     }
@@ -155,7 +155,7 @@ public class CaptureButton extends View {
                     mState = STATE_PRESS;
 
                     //判断按钮状态是否为可录制状态
-                    if ((mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
+                    if ((mMode == MODE_VIDEO || mMode == MODE_ALL)) {
                         postDelayed(mLongPressRunnable, 500);
                     }
                 }
@@ -163,7 +163,7 @@ public class CaptureButton extends View {
             break;
 
             case MotionEvent.ACTION_MOVE: {//移动
-                if (mState == STATE_RECORDERING && (mActionState == BUTTON_STATE_ONLY_RECORDER || mActionState == BUTTON_STATE_BOTH)) {
+                if (mState == STATE_RECORDERING && (mMode == MODE_VIDEO || mMode == MODE_ALL)) {
                     if (mOnCaptureListener != null) {
                         mOnCaptureListener.onRecordZoom(mEventY - event.getY());
                     }
@@ -195,7 +195,7 @@ public class CaptureButton extends View {
         switch (mState) {
 
             case STATE_PRESS: {//当前是点击按下
-                if (mActionState == BUTTON_STATE_ONLY_CAPTURE || mActionState == BUTTON_STATE_BOTH) {
+                if (mMode == MODE_PHOTO || mMode == MODE_ALL) {
                     startCaptureAnimation();
 
                 } else {
@@ -407,8 +407,8 @@ public class CaptureButton extends View {
     /**
      * 设置按钮功能（拍照和录像）
      */
-    public void setButtonFeatures(int state) {
-        this.mActionState = state;
+    public void setMode(int mode) {
+        mMode = mode;
     }
 
     /**

@@ -48,9 +48,9 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
     public static final int MEDIA_QUALITY_SORRY = 1 * 80000;
 
-    public static final int BUTTON_STATE_ONLY_CAPTURE = 0x101;      //只能拍照
-    public static final int BUTTON_STATE_ONLY_RECORDER = 0x102;     //只能录像
-    public static final int BUTTON_STATE_BOTH = 0x103;              //两者都可以
+    public static final int MODE_PHOTO = 0x101;//只能拍照
+    public static final int MODE_VIDEO = 0x102;//只能录像
+    public static final int MODE_ALL = 0x103;//两者都可以
 
     private VideoView v_preview;
     private ImageView iv_photo;
@@ -70,6 +70,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
     private float mFirstTouchLength;
+    private int mMode;
 
     private byte[] mPhotoBytes;//照片
     private String mVideoPath;//视频文件地址
@@ -97,11 +98,13 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         mContext = context;
         mMaxDuration = 15000;
         mMinDuration = 3000;
+        mMode = MODE_ALL;
 
         if (attrs != null) {
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.JCameraView, defStyleAttr, 0);
-            mMaxDuration = a.getInteger(R.styleable.JCameraView_max_duration, mMaxDuration);
-            mMinDuration = a.getInteger(R.styleable.JCameraView_min_duration, mMinDuration);
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr, 0);
+            mMaxDuration = a.getInteger(R.styleable.CameraView_max_duration, mMaxDuration);
+            mMinDuration = a.getInteger(R.styleable.CameraView_min_duration, mMinDuration);
+            mMode = a.getInt(R.styleable.CameraView_mode, mMode);
             a.recycle();
         }
 
@@ -155,6 +158,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         //拍照、录像
         layout_capture.setMaxDuration(mMaxDuration);
         layout_capture.setMinDuration(mMinDuration);
+        layout_capture.setMode(mMode);
         layout_capture.setOnItemClickListener(new CaptureLayout.OnItemClickListener() {
 
             @Override
@@ -401,8 +405,8 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     }
 
     //设置CaptureButton功能（拍照和录像）
-    public void setFeatures(int state) {
-        this.layout_capture.setButtonFeatures(state);
+    public void setMode(int mode) {
+        this.layout_capture.setMode(mode);
     }
 
     //设置录制质量

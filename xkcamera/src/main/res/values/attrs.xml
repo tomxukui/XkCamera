@@ -7,12 +7,35 @@
     <attr name="outside_color" format="color" />
     <attr name="inside_color" format="color" />
 
-    <declare-styleable name="JCameraView">
+    <attr name="flash_type">
+        <flag name="auto" value="0x021" />
+        <flag name="on" value="0x022" />
+        <flag name="off" value="0x023" />
+    </attr>
+
+    <attr name="video_quality">
+        <flag name="high" value="2000000" />
+        <flag name="middle" value="1600000" />
+        <flag name="low" value="1200000" />
+        <flag name="poor" value="800000" />
+        <flag name="funny" value="400000" />
+        <flag name="despair" value="200000" />
+        <flag name="sorry" value="80000" />
+    </attr>
+
+    <attr name="mode">
+        <flag name="photo" value="0x101" />
+        <flag name="video" value="0x102" />
+        <flag name="all" value="0x103" />
+    </attr>
+
+    <declare-styleable name="CameraView">
         <attr name="max_duration" />
         <attr name="min_duration" />
         <attr name="progress_color" />
         <attr name="outside_color" />
         <attr name="inside_color" />
+        <attr name="mode" />
     </declare-styleable>
 
     <declare-styleable name="CaptureButton">
