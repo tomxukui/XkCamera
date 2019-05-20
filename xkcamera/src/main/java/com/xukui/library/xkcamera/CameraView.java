@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
+import com.xukui.library.xkcamera.bean.FlashMode;
 import com.xukui.library.xkcamera.bean.Mode;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
@@ -28,11 +29,6 @@ import com.xukui.library.xkcamera.util.ScreenUtils;
 import java.io.IOException;
 
 public class CameraView extends FrameLayout implements SurfaceHolder.Callback, ICameraView {
-
-    //闪关灯状态
-    private static final int TYPE_FLASH_AUTO = 0x021;
-    private static final int TYPE_FLASH_ON = 0x022;
-    private static final int TYPE_FLASH_OFF = 0x023;
 
     //拍照浏览时候的类型
     public static final int TYPE_PICTURE = 0x001;
@@ -61,12 +57,14 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
     private Context mContext;
 
-    private int mFlashType = TYPE_FLASH_OFF;
     private int mMaxDuration;//视频录制最长时间
     private int mMinDuration;//视频录制最短时间
+    private boolean mFlashVisibility;//是否显示闪光灯
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
     private float mFirstTouchLength;
+
+    private FlashMode mFlashMode;
     private Mode mMode;
 
     private byte[] mPhotoBytes;//照片
@@ -96,28 +94,46 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         mMaxDuration = 15000;
         mMinDuration = 3000;
         mMode = Mode.ALL;
+        mFlashMode = FlashMode.OFF;
+        mFlashVisibility = true;
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr, 0);
             mMaxDuration = a.getInteger(R.styleable.CameraView_max_duration, mMaxDuration);
             mMinDuration = a.getInteger(R.styleable.CameraView_min_duration, mMinDuration);
+            mFlashVisibility = a.getBoolean(R.styleable.CameraView_flash_visibility, mFlashVisibility);
 
+            //模式
             switch (a.getInt(R.styleable.CameraView_mode, 0)) {
 
-                case 1: {
+                case 1:
                     mMode = Mode.PHOTO;
-                }
-                break;
+                    break;
 
-                case 2: {
+                case 2:
                     mMode = Mode.VIDEO;
-                }
-                break;
+                    break;
 
-                default: {
+                default:
                     mMode = Mode.ALL;
-                }
-                break;
+                    break;
+
+            }
+
+            //闪光灯
+            switch (a.getInt(R.styleable.CameraView_flash_mode, 0)) {
+
+                case 1:
+                    mFlashMode = FlashMode.ON;
+                    break;
+
+                case 2:
+                    mFlashMode = FlashMode.AUTO;
+                    break;
+
+                default:
+                    mFlashMode = FlashMode.OFF;
+                    break;
 
             }
 
@@ -146,14 +162,25 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
         //设置闪光灯
         setFlashView();
+        iv_flash.setVisibility(mFlashVisibility ? View.VISIBLE : View.GONE);
         iv_flash.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mFlashType++;
+                switch (mFlashMode) {
 
-                if (mFlashType > TYPE_FLASH_OFF) {
-                    mFlashType = TYPE_FLASH_AUTO;
+                    case AUTO:
+                        mFlashMode = FlashMode.ON;
+                        break;
+
+                    case ON:
+                        mFlashMode = FlashMode.OFF;
+                        break;
+
+                    case OFF:
+                        mFlashMode = FlashMode.AUTO;
+                        break;
+
                 }
 
                 setFlashView();
@@ -619,21 +646,21 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
      * 设置闪光灯
      */
     private void setFlashView() {
-        switch (mFlashType) {
+        switch (mFlashMode) {
 
-            case TYPE_FLASH_AUTO: {//自动闪光
+            case AUTO: {//自动闪光
                 iv_flash.setImageResource(R.drawable.xkc_ic_flash_auto);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_AUTO);
             }
             break;
 
-            case TYPE_FLASH_ON: {//开启闪光
+            case ON: {//开启闪光
                 iv_flash.setImageResource(R.drawable.xkc_ic_flash_on);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_ON);
             }
             break;
 
-            case TYPE_FLASH_OFF: {//关闭闪光
+            case OFF: {//关闭闪光
                 iv_flash.setImageResource(R.drawable.xkc_ic_flash_off);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_OFF);
             }

@@ -7,10 +7,10 @@
     <attr name="outside_color" format="color" />
     <attr name="inside_color" format="color" />
 
-    <attr name="flash_type">
-        <flag name="auto" value="0x021" />
-        <flag name="on" value="0x022" />
-        <flag name="off" value="0x023" />
+    <attr name="flash_mode">
+        <flag name="off" value="0" />
+        <flag name="on" value="1" />
+        <flag name="auto" value="2" />
     </attr>
 
     <attr name="video_quality">
@@ -36,6 +36,8 @@
         <attr name="outside_color" />
         <attr name="inside_color" />
         <attr name="mode" />
+        <attr name="flash_mode" />
+        <attr name="flash_visibility" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="CaptureButton">
