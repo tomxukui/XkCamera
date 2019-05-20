@@ -72,6 +72,11 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         //全屏显示
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
@@ -87,11 +92,7 @@ public class CameraActivity extends AppCompatActivity {
             int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
             decorView.setSystemUiVisibility(option);
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         if (granted) {
             view_camera.onResume();
         }
@@ -151,7 +152,8 @@ public class CameraActivity extends AppCompatActivity {
                 }
                 if (size == 0) {
                     granted = true;
-                    view_camera.onResume();
+                    view_camera.openCamera();
+
                 } else {
                     Toast.makeText(this, "请到设置-权限管理中开启", Toast.LENGTH_SHORT).show();
                     finish();

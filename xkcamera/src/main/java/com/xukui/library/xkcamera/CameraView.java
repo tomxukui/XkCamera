@@ -74,6 +74,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     private byte[] mPhotoBytes;//照片
     private String mVideoPath;//视频文件地址
     private byte[] mVideoCoverBytes;//视频的第一帧图片
+    private boolean mSurfaceCreated = false;
 
     private OnCameraListener mOnCameraListener;
 
@@ -250,7 +251,32 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         }
     }
 
-    //生命周期onResume
+    /**
+     * 开启相机
+     */
+    public void openCamera() {
+        if (mSurfaceCreated) {
+            new Thread() {
+
+                @Override
+                public void run() {
+                    CameraInterface.getInstance().doOpenCamera(new CameraInterface.OnOpenCameraListener() {
+
+                        @Override
+                        public void onSuccess() {
+                            CameraInterface.getInstance().doStartPreview(v_preview.getHolder(), mScreenProp);
+                        }
+
+                    });
+                }
+
+            }.start();
+        }
+    }
+
+    /**
+     * 生命周期onResume
+     */
     public void onResume() {
         resetState(TYPE_DEFAULT); //重置状态
         CameraInterface.getInstance().registerSensorManager(mContext);
@@ -258,7 +284,9 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         mMachine.start(v_preview.getHolder(), mScreenProp);
     }
 
-    //生命周期onPause
+    /**
+     * 生命周期onPause
+     */
     public void onPause() {
         stopVideo();
         resetState(TYPE_PICTURE);
@@ -268,21 +296,9 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        new Thread() {
+        mSurfaceCreated = true;
 
-            @Override
-            public void run() {
-                CameraInterface.getInstance().doOpenCamera(new CameraInterface.OnOpenCameraListener() {
-
-                    @Override
-                    public void onSuccess() {
-                        CameraInterface.getInstance().doStartPreview(v_preview.getHolder(), mScreenProp);
-                    }
-
-                });
-            }
-
-        }.start();
+        openCamera();
     }
 
     @Override
@@ -291,6 +307,8 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        mSurfaceCreated = false;
+
         CameraInterface.getInstance().doDestroyCamera();
     }
 

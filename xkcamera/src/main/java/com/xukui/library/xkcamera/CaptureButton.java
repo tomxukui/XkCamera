@@ -207,6 +207,7 @@ public class CaptureButton extends View {
             case STATE_RECORDERING: {//当前是长按状态
                 //停止计时器
                 mTimer.cancel();
+
                 //录制结束
                 recordEnd();
             }
