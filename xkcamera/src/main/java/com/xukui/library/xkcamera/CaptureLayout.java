@@ -22,9 +22,9 @@ public class CaptureLayout extends LinearLayout {
     private ImageView iv_confirm;
     private CaptureButton btn_capture;
 
-    private OnItemClickListener mOnItemClickListener;
-
     private Mode mMode;
+
+    private OnItemClickListener mOnItemClickListener;
 
     public CaptureLayout(Context context) {
         this(context, null);
