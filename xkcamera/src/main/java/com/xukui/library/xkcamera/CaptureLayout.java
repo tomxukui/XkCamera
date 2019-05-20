@@ -267,11 +267,11 @@ public class CaptureLayout extends LinearLayout {
         set.start();
     }
 
-    public void setMaxDuration(int duration) {
+    public void setMaxDuration(long duration) {
         btn_capture.setMaxDuration(duration);
     }
 
-    public void setMinDuration(int duration) {
+    public void setMinDuration(long duration) {
         btn_capture.setMinDuration(duration);
     }
 

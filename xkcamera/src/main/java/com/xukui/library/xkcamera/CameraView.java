@@ -57,8 +57,8 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
     private Context mContext;
 
-    private int mMaxDuration;//视频录制最长时间
-    private int mMinDuration;//视频录制最短时间
+    private long mMaxDuration;//视频录制最长时间
+    private long mMinDuration;//视频录制最短时间
     private boolean mFlashVisibility;//是否显示闪光灯
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
@@ -99,8 +99,8 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr, 0);
-            mMaxDuration = a.getInteger(R.styleable.CameraView_max_duration, mMaxDuration);
-            mMinDuration = a.getInteger(R.styleable.CameraView_min_duration, mMinDuration);
+            mMaxDuration = a.getInteger(R.styleable.CameraView_max_duration, 15000);
+            mMinDuration = a.getInteger(R.styleable.CameraView_min_duration, 3000);
             mFlashVisibility = a.getBoolean(R.styleable.CameraView_flash_visibility, mFlashVisibility);
 
             //模式
@@ -457,13 +457,13 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         CameraInterface.getInstance().setMediaQuality(quality);
     }
 
-    public void setMaxDuration(int duration) {
+    public void setMaxDuration(long duration) {
         mMaxDuration = duration;
 
         layout_capture.setMaxDuration(duration);
     }
 
-    public void setMinDuration(int duration) {
+    public void setMinDuration(long duration) {
         mMinDuration = duration;
 
         layout_capture.setMinDuration(duration);

@@ -29,8 +29,8 @@ public class CaptureButton extends View {
     private int mInReduceSize;//长按内圆缩小的Size
 
     private float mProgress;//录制视频的进度
-    private int mMaxDuration;//录制视频最大时间长度
-    private int mMinDuration;//最短录制时间限制
+    private long mMaxDuration;//视频最长时长
+    private long mMinDuration;//视频最短时长
 
     private int mRecordedTime;//记录当前录制的时间
     private State mState;//当前按钮状态
@@ -68,7 +68,7 @@ public class CaptureButton extends View {
 
     private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
         mProgress = 0;
-        mMaxDuration = 10000;
+        mMaxDuration = 10 * 1000;
         mMinDuration = 100;
         mRecordedTime = 0;
         mState = State.IDLE;
@@ -381,7 +381,7 @@ public class CaptureButton extends View {
     /**
      * 设置最长录制时间
      */
-    public void setMaxDuration(int duration) {
+    public void setMaxDuration(long duration) {
         mMaxDuration = duration;
         mTimer = new RecordCountDownTimer(duration, duration / 360);
     }
@@ -389,7 +389,7 @@ public class CaptureButton extends View {
     /**
      * 设置最短录制时间
      */
-    public void setMinDuration(int duration) {
+    public void setMinDuration(long duration) {
         mMinDuration = duration;
     }
 
