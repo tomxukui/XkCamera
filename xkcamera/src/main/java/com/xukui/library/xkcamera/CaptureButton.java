@@ -144,7 +144,7 @@ public class CaptureButton extends View {
                     mState = State.PRESS;
 
                     //判断按钮状态是否为可录制状态
-                    if ((mMode == Mode.VIDEO || mMode == Mode.ALL)) {
+                    if (mMode == Mode.VIDEO || mMode == Mode.ALL) {
                         postDelayed(mLongPressRunnable, 500);
                     }
                 }
