@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
+import com.xukui.library.xkcamera.bean.Mode;
 import com.xukui.library.xkcamera.state.CameraMachine;
 import com.xukui.library.xkcamera.util.FileUtil;
 import com.xukui.library.xkcamera.util.ImageUtil;
@@ -48,10 +49,6 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     public static final int MEDIA_QUALITY_DESPAIR = 2 * 100000;
     public static final int MEDIA_QUALITY_SORRY = 1 * 80000;
 
-    public static final int MODE_PHOTO = 0x101;//只能拍照
-    public static final int MODE_VIDEO = 0x102;//只能录像
-    public static final int MODE_ALL = 0x103;//两者都可以
-
     private VideoView v_preview;
     private ImageView iv_photo;
     private StableImageView iv_flash;
@@ -70,7 +67,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     private float mScreenProp;//屏幕的比例(高/宽)
     private boolean mFirstTouch = true;
     private float mFirstTouchLength;
-    private int mMode;
+    private Mode mMode;
 
     private byte[] mPhotoBytes;//照片
     private String mVideoPath;//视频文件地址
@@ -98,13 +95,32 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         mContext = context;
         mMaxDuration = 15000;
         mMinDuration = 3000;
-        mMode = MODE_ALL;
+        mMode = Mode.ALL;
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr, 0);
             mMaxDuration = a.getInteger(R.styleable.CameraView_max_duration, mMaxDuration);
             mMinDuration = a.getInteger(R.styleable.CameraView_min_duration, mMinDuration);
-            mMode = a.getInt(R.styleable.CameraView_mode, mMode);
+
+            switch (a.getInt(R.styleable.CameraView_mode, 0)) {
+
+                case 1: {
+                    mMode = Mode.PHOTO;
+                }
+                break;
+
+                case 2: {
+                    mMode = Mode.VIDEO;
+                }
+                break;
+
+                default: {
+                    mMode = Mode.ALL;
+                }
+                break;
+
+            }
+
             a.recycle();
         }
 
@@ -405,7 +421,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     }
 
     //设置CaptureButton功能（拍照和录像）
-    public void setMode(int mode) {
+    public void setMode(Mode mode) {
         this.layout_capture.setMode(mode);
     }
 

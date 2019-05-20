@@ -12,8 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import static com.xukui.library.xkcamera.CameraView.MODE_PHOTO;
-import static com.xukui.library.xkcamera.CameraView.MODE_VIDEO;
+import com.xukui.library.xkcamera.bean.Mode;
 
 public class CaptureLayout extends LinearLayout {
 
@@ -23,9 +22,9 @@ public class CaptureLayout extends LinearLayout {
     private ImageView iv_confirm;
     private CaptureButton btn_capture;
 
-    private int mMode;
-
     private OnItemClickListener mOnItemClickListener;
+
+    private Mode mMode;
 
     public CaptureLayout(Context context) {
         this(context, null);
@@ -231,17 +230,7 @@ public class CaptureLayout extends LinearLayout {
 
     private void showTipView() {
         tv_tip.clearAnimation();
-
-        if (mMode == MODE_PHOTO) {
-            tv_tip.setText("轻触拍照");
-
-        } else if (mMode == MODE_VIDEO) {
-            tv_tip.setText("长按摄像");
-
-        } else {
-            tv_tip.setText("轻触拍照, 长按摄像");
-        }
-
+        tv_tip.setText(getTip(mMode));
         tv_tip.setAlpha(1f);
     }
 
@@ -297,12 +286,26 @@ public class CaptureLayout extends LinearLayout {
         btn_capture.setMinDuration(duration);
     }
 
-    public void setMode(int mode) {
+    public void setMode(Mode mode) {
         mMode = mode;
 
         btn_capture.setMode(mode);
+        tv_tip.setText(getTip(mode));
+    }
 
-        showTipView();
+    private String getTip(Mode mode) {
+        switch (mode) {
+
+            case PHOTO:
+                return "轻触拍照";
+
+            case VIDEO:
+                return "长按摄像";
+
+            default:
+                return "轻触拍照, 长按摄像";
+
+        }
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

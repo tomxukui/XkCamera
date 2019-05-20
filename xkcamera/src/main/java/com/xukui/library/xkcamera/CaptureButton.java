@@ -15,19 +15,10 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.xukui.library.xkcamera.bean.Mode;
 import com.xukui.library.xkcamera.util.CheckPermission;
 
-import static com.xukui.library.xkcamera.CameraView.MODE_ALL;
-import static com.xukui.library.xkcamera.CameraView.MODE_PHOTO;
-import static com.xukui.library.xkcamera.CameraView.MODE_VIDEO;
-
 public class CaptureButton extends View {
-
-    public static final int STATE_IDLE = 0x001;//空闲状态
-    public static final int STATE_PRESS = 0x002;//按下状态
-    public static final int STATE_LONG_PRESS = 0x003;//长按状态
-    public static final int STATE_RECORDERING = 0x004;//录制状态
-    public static final int STATE_BAN = 0x005;//禁止状态
 
     private int mSize;//按钮尺寸
     private float mRadius;//按钮半径
@@ -42,8 +33,8 @@ public class CaptureButton extends View {
     private int mMinDuration;//最短录制时间限制
 
     private int mRecordedTime;//记录当前录制的时间
-    private int mState;//当前按钮状态
-    private int mMode;//按钮可执行的功能状态（拍照,录制,两者）
+    private State mState;//当前按钮状态
+    private Mode mMode;//当前模式
 
     private int mProgressColor;//进度条颜色
     private int mOutsideColor;//外圆背景色
@@ -60,9 +51,9 @@ public class CaptureButton extends View {
     private LongPressRunnable mLongPressRunnable = new LongPressRunnable();//长按后处理的逻辑Runnable
     private OnCaptureListener mOnCaptureListener;
 
-    public CaptureButton(Context context, int buttonSize) {
+    public CaptureButton(Context context, int size) {
         super(context);
-        mSize = buttonSize;
+        mSize = size;
         initData(context, null, 0);
     }
 
@@ -76,8 +67,12 @@ public class CaptureButton extends View {
     }
 
     private void initData(Context context, AttributeSet attrs, int defStyleAttr) {
-        mMaxDuration = 15000;
-        mMinDuration = 3000;
+        mProgress = 0;
+        mMaxDuration = 10000;
+        mMinDuration = 100;
+        mRecordedTime = 0;
+        mState = State.IDLE;
+        mMode = Mode.ALL;
         mProgressColor = 0xEE16AE16;
         mOutsideColor = 0xEEDCDCDC;
         mInsideColor = 0xFFFFFFFF;
@@ -85,8 +80,6 @@ public class CaptureButton extends View {
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CaptureButton, defStyleAttr, 0);
             mSize = a.getDimensionPixelOffset(R.styleable.CaptureButton_size, 200);
-            mMaxDuration = a.getInteger(R.styleable.CaptureButton_max_duration, mMaxDuration);
-            mMinDuration = a.getInteger(R.styleable.CaptureButton_min_duration, mMinDuration);
             mProgressColor = a.getColor(R.styleable.CaptureButton_progress_color, mProgressColor);
             mOutsideColor = a.getColor(R.styleable.CaptureButton_outside_color, mOutsideColor);
             mInsideColor = a.getColor(R.styleable.CaptureButton_inside_color, mInsideColor);
@@ -111,10 +104,6 @@ public class CaptureButton extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
 
-        mProgress = 0;
-        mState = STATE_IDLE;//初始化为空闲状态
-        mMode = MODE_ALL;//初始化按钮为可录制可拍照
-
         mTimer = new RecordCountDownTimer(mMaxDuration, mMaxDuration / 360);//定时器
     }
 
@@ -137,7 +126,7 @@ public class CaptureButton extends View {
         canvas.drawCircle(mCenterX, mCenterY, mInRadius, mPaint);
 
         //如果状态为录制状态，则绘制录制进度条
-        if (mState == STATE_RECORDERING) {
+        if (mState == State.RECORDERING) {
             mPaint.setColor(mProgressColor);
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(mStrokeWidth);
@@ -150,12 +139,12 @@ public class CaptureButton extends View {
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN: {//按下
-                if (event.getPointerCount() == 1 && mState == STATE_IDLE) {
+                if (event.getPointerCount() == 1 && mState == State.IDLE) {
                     mEventY = event.getY();
-                    mState = STATE_PRESS;
+                    mState = State.PRESS;
 
                     //判断按钮状态是否为可录制状态
-                    if ((mMode == MODE_VIDEO || mMode == MODE_ALL)) {
+                    if ((mMode == Mode.VIDEO || mMode == Mode.ALL)) {
                         postDelayed(mLongPressRunnable, 500);
                     }
                 }
@@ -163,7 +152,7 @@ public class CaptureButton extends View {
             break;
 
             case MotionEvent.ACTION_MOVE: {//移动
-                if (mState == STATE_RECORDERING && (mMode == MODE_VIDEO || mMode == MODE_ALL)) {
+                if (mState == State.RECORDERING && (mMode == Mode.VIDEO || mMode == Mode.ALL)) {
                     if (mOnCaptureListener != null) {
                         mOnCaptureListener.onRecordZoom(mEventY - event.getY());
                     }
@@ -194,17 +183,17 @@ public class CaptureButton extends View {
 
         switch (mState) {
 
-            case STATE_PRESS: {//当前是点击按下
-                if (mMode == MODE_PHOTO || mMode == MODE_ALL) {
+            case PRESS: {//当前是点击按下
+                if (mMode == Mode.PHOTO || mMode == Mode.ALL) {
                     startCaptureAnimation();
 
                 } else {
-                    mState = STATE_IDLE;
+                    mState = State.IDLE;
                 }
             }
             break;
 
-            case STATE_RECORDERING: {//当前是长按状态
+            case RECORDERING: {//当前是长按状态
                 //停止计时器
                 mTimer.cancel();
 
@@ -240,7 +229,7 @@ public class CaptureButton extends View {
      * 重制状态
      */
     private void resetRecord() {
-        mState = STATE_BAN;
+        mState = State.BAN;
         mProgress = 0;
 
         invalidate();
@@ -269,7 +258,7 @@ public class CaptureButton extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                mState = STATE_BAN;
+                mState = State.BAN;
 
                 if (mOnCaptureListener != null) {
                     mOnCaptureListener.onTakePicture();
@@ -318,8 +307,8 @@ public class CaptureButton extends View {
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 //设置为录制状态
-                if (mState == STATE_LONG_PRESS) {
-                    mState = STATE_RECORDERING;
+                if (mState == State.LONG_PRESS) {
+                    mState = State.RECORDERING;
                     mTimer.start();
 
                     if (mOnCaptureListener != null) {
@@ -371,11 +360,11 @@ public class CaptureButton extends View {
 
         @Override
         public void run() {
-            mState = STATE_LONG_PRESS;//如果按下后经过500毫秒则会修改当前状态为长按状态
+            mState = State.LONG_PRESS;//如果按下后经过500毫秒则会修改当前状态为长按状态
 
             //没有录制权限
             if (CheckPermission.getRecordState() != CheckPermission.STATE_SUCCESS) {
-                mState = STATE_IDLE;
+                mState = State.IDLE;
 
                 if (mOnCaptureListener != null) {
                     mOnCaptureListener.onRecordError();
@@ -405,9 +394,9 @@ public class CaptureButton extends View {
     }
 
     /**
-     * 设置按钮功能（拍照和录像）
+     * 设置模式
      */
-    public void setMode(int mode) {
+    public void setMode(Mode mode) {
         mMode = mode;
     }
 
@@ -415,14 +404,14 @@ public class CaptureButton extends View {
      * 是否空闲状态
      */
     public boolean isIdle() {
-        return mState == STATE_IDLE ? true : false;
+        return mState == State.IDLE ? true : false;
     }
 
     /**
      * 设置状态
      */
     public void resetState() {
-        mState = STATE_IDLE;
+        mState = State.IDLE;
     }
 
     public void setOnCaptureListener(OnCaptureListener listener) {
@@ -442,6 +431,19 @@ public class CaptureButton extends View {
         void onRecordZoom(float zoom);
 
         void onRecordError();
+
+    }
+
+    /**
+     * 按钮状态
+     */
+    private enum State {
+
+        IDLE,//空闲状态
+        PRESS,//按下状态
+        LONG_PRESS,//长按状态
+        RECORDERING,//录制状态
+        BAN//禁止状态
 
     }
 

@@ -24,9 +24,9 @@
     </attr>
 
     <attr name="mode">
-        <flag name="photo" value="0x101" />
-        <flag name="video" value="0x102" />
-        <flag name="all" value="0x103" />
+        <flag name="all" value="0" />
+        <flag name="photo" value="1" />
+        <flag name="video" value="2" />
     </attr>
 
     <declare-styleable name="CameraView">
@@ -40,12 +40,9 @@
 
     <declare-styleable name="CaptureButton">
         <attr name="size" format="dimension" />
-        <attr name="max_duration" />
-        <attr name="min_duration" />
         <attr name="progress_color" />
         <attr name="outside_color" />
         <attr name="inside_color" />
-        <attr name="mode" />
     </declare-styleable>
 
 </resources>
