@@ -255,23 +255,12 @@ public class CaptureLayout extends LinearLayout {
 
         AnimatorSet set = new AnimatorSet();
         set.play(anim1).before(anim2);
-        set.addListener(new Animator.AnimatorListener() {
+        set.addListener(new AnimatorListenerAdapter() {
 
             @Override
-            public void onAnimationStart(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
                 showTipView();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
             }
 
         });
