@@ -45,6 +45,7 @@
         <attr name="progress_color" />
         <attr name="outside_color" />
         <attr name="inside_color" />
+        <attr name="mode" />
     </declare-styleable>
 
 </resources>

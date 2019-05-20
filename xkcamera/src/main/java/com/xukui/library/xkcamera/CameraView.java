@@ -414,6 +414,18 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         CameraInterface.getInstance().setMediaQuality(quality);
     }
 
+    public void setMaxDuration(int duration) {
+        mMaxDuration = duration;
+
+        layout_capture.setMaxDuration(duration);
+    }
+
+    public void setMinDuration(int duration) {
+        mMinDuration = duration;
+
+        layout_capture.setMinDuration(duration);
+    }
+
     @Override
     public void resetState(int type) {
         switch (type) {
