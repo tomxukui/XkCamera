@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="max_duration" format="integer" />
-    <attr name="min_duration" format="integer" />
-    <attr name="progress_color" format="color" />
-    <attr name="outside_color" format="color" />
-    <attr name="inside_color" format="color" />
-
     <attr name="flash_mode">
         <flag name="off" value="0" />
         <flag name="on" value="1" />
@@ -30,21 +24,18 @@
     </attr>
 
     <declare-styleable name="CameraView">
-        <attr name="max_duration" />
-        <attr name="min_duration" />
-        <attr name="progress_color" />
-        <attr name="outside_color" />
-        <attr name="inside_color" />
         <attr name="mode" />
         <attr name="flash_mode" />
         <attr name="flash_visibility" format="boolean" />
+        <attr name="max_duration" format="integer" />
+        <attr name="min_duration" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="CaptureButton">
         <attr name="size" format="dimension" />
-        <attr name="progress_color" />
-        <attr name="outside_color" />
-        <attr name="inside_color" />
+        <attr name="progress_color" format="color" />
+        <attr name="outside_color" format="color" />
+        <attr name="inside_color" format="color" />
     </declare-styleable>
 
 </resources>
