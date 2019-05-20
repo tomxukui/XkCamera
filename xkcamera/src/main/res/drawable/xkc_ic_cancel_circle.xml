@@ -13,7 +13,7 @@
         android:width="30dp"
         android:height="30dp"
         android:gravity="center">
-        <bitmap android:src="@drawable/ic_cancel" />
+        <bitmap android:src="@drawable/xkc_ic_cancel" />
     </item>
 
 </layer-list>

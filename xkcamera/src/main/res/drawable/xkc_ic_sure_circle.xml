@@ -13,7 +13,7 @@
         android:width="30dp"
         android:height="20dp"
         android:gravity="center">
-        <bitmap android:src="@drawable/ic_sure" />
+        <bitmap android:src="@drawable/xkc_ic_sure" />
     </item>
 
 </layer-list>

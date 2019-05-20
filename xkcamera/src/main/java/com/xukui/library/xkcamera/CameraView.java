@@ -109,7 +109,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
     }
 
     private void initView(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.xkcamera_view_camera, this);
+        View view = LayoutInflater.from(context).inflate(R.layout.xkc_view_camera, this);
 
         v_preview = view.findViewById(R.id.v_preview);
         iv_photo = view.findViewById(R.id.iv_photo);
@@ -590,19 +590,19 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         switch (mFlashType) {
 
             case TYPE_FLASH_AUTO: {//自动闪光
-                iv_flash.setImageResource(R.drawable.ic_flash_auto);
+                iv_flash.setImageResource(R.drawable.xkc_ic_flash_auto);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_AUTO);
             }
             break;
 
             case TYPE_FLASH_ON: {//开启闪光
-                iv_flash.setImageResource(R.drawable.ic_flash_on);
+                iv_flash.setImageResource(R.drawable.xkc_ic_flash_on);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_ON);
             }
             break;
 
             case TYPE_FLASH_OFF: {//关闭闪光
-                iv_flash.setImageResource(R.drawable.ic_flash_off);
+                iv_flash.setImageResource(R.drawable.xkc_ic_flash_off);
                 mMachine.flash(Camera.Parameters.FLASH_MODE_OFF);
             }
             break;

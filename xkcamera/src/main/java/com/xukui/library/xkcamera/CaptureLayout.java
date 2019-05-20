@@ -39,7 +39,7 @@ public class CaptureLayout extends LinearLayout {
     private void initView(Context context) {
         setOrientation(VERTICAL);
 
-        View view = LayoutInflater.from(context).inflate(R.layout.xkcamera_view_capture_layout, this);
+        View view = LayoutInflater.from(context).inflate(R.layout.xkc_view_capture_layout, this);
         tv_tip = view.findViewById(R.id.tv_tip);
         iv_back = view.findViewById(R.id.iv_back);
         iv_cancel = view.findViewById(R.id.iv_cancel);

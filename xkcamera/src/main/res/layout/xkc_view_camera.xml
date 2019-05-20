@@ -26,7 +26,7 @@
         android:layout_height="60dp"
         android:layout_gravity="left|top"
         android:padding="18dp"
-        android:src="@drawable/ic_flash_on" />
+        android:src="@drawable/xkc_ic_flash_on" />
 
     <!--镜头切换-->
     <com.xukui.library.xkcamera.StableImageView
@@ -35,7 +35,7 @@
         android:layout_height="60dp"
         android:layout_gravity="top|right"
         android:padding="18dp"
-        android:src="@drawable/ic_camera" />
+        android:src="@drawable/xkc_ic_camera" />
 
     <!--捕捉功能-->
     <com.xukui.library.xkcamera.CaptureLayout
@@ -50,7 +50,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_focus"
+        android:src="@drawable/xkc_ic_focus"
         android:visibility="invisible" />
 
 </FrameLayout>

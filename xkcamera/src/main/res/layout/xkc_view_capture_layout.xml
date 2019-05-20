@@ -26,14 +26,14 @@
             android:layout_gravity="left|center_vertical"
             android:layout_marginLeft="20dp"
             android:padding="10dp"
-            android:src="@drawable/ic_back" />
+            android:src="@drawable/xkc_ic_back" />
 
         <ImageView
             android:id="@+id/iv_cancel"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_cancel_circle"
+            android:src="@drawable/xkc_ic_cancel_circle"
             android:visibility="gone" />
 
         <ImageView
@@ -41,7 +41,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_sure_circle"
+            android:src="@drawable/xkc_ic_sure_circle"
             android:visibility="gone" />
 
         <com.xukui.library.xkcamera.CaptureButton
