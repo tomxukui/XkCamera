@@ -34,6 +34,7 @@ public class AlbumActivity extends AppCompatActivity {
         Button btn2 = (Button) findViewById(R.id.btn2);
         GridView gv = (GridView) findViewById(R.id.gv);
         gv.setAdapter(adapter = new BaseAdapter() {
+
             @Override
             public int getCount() {
                 return photos == null ? 0 : photos.size();
