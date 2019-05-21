@@ -162,7 +162,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
 
         //设置闪光灯
         setFlashView();
-        iv_flash.setVisibility(mFlashVisibility ? View.VISIBLE : View.GONE);
+        iv_flash.setVisibility(mFlashVisibility ? View.VISIBLE : View.INVISIBLE);
         iv_flash.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -243,7 +243,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
             @Override
             public void onRecordShort(final long time) {
                 iv_switch.setVisibility(VISIBLE);
-                iv_flash.setVisibility(VISIBLE);
+                iv_flash.setVisibility(mFlashVisibility ? View.VISIBLE : View.INVISIBLE);
 
                 postDelayed(new Runnable() {
 
@@ -498,7 +498,7 @@ public class CameraView extends FrameLayout implements SurfaceHolder.Callback, I
         }
 
         iv_switch.setVisibility(VISIBLE);
-        iv_flash.setVisibility(VISIBLE);
+        iv_flash.setVisibility(mFlashVisibility ? View.VISIBLE : View.INVISIBLE);
         layout_capture.reset();
     }
 
