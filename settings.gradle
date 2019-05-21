@@ -1,1 +1,1 @@
-include ':app', ':xkcamera'
+include ':app', ':xkcamera', ':xkalbum'

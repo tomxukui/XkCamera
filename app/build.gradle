@@ -26,4 +26,5 @@ dependencies {
     implementation rootProject.ext.dependencies["design"]
 
     implementation project(':xkcamera')
+    implementation project(':xkalbum')
 }
