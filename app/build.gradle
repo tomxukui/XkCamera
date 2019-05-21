@@ -9,6 +9,10 @@ android {
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode 4
         versionName "1.0.3"
+
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
     }
 
     buildTypes {

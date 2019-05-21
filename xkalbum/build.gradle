@@ -13,7 +13,7 @@ android {
         versionName "1.0.0"
 
         ndk {
-            abiFilters 'armeabi'
+            abiFilters 'armeabi', 'armeabi-v7a'
         }
 
         externalNativeBuild {
@@ -44,6 +44,7 @@ android {
         ndkBuild {
             //path 'src/main/jni/Android.mk'
         }
+
     }
 
     sourceSets.main {
@@ -54,5 +55,4 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
